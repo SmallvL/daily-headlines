@@ -58,13 +58,17 @@
 
 ## 📸 截图
 
-| Dashboard | 信息源管理 | 数据管理 |
-|:---------:|:---------:|:--------:|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Sources](docs/screenshots/sources.png) | ![Data Mgmt](docs/screenshots/data-mgmt.png) |
+| 登录页 | Dashboard | 信息源管理 |
+|:------:|:---------:|:---------:|
+| ![Login](docs/screenshots/login.png) | ![Dashboard](docs/screenshots/dashboard.png) | ![Sources](docs/screenshots/sources.png) |
 
-| 信息流 | 任务日志 | 设置 |
-|:------:|:--------:|:----:|
-| ![Feed](docs/screenshots/feed.png) | ![Logs](docs/screenshots/logs.png) | ![Settings](docs/screenshots/settings.png) |
+| AI Agent | Agent Token | 数据管理 |
+|:--------:|:-----------:|:--------:|
+| ![Agent](docs/screenshots/agent.png) | ![Agent Tokens](docs/screenshots/agent-tokens.png) | ![Data Mgmt](docs/screenshots/data-mgmt.png) |
+
+| 任务日志 | 设置 |
+|:--------:|:----:|
+| ![Logs](docs/screenshots/logs.png) | ![Settings](docs/screenshots/settings.png) |
 
 ---
 
