@@ -1,0 +1,275 @@
+import {
+  CheckOutlined,
+  GlobalOutlined,
+  MoonOutlined,
+  SunOutlined,
+  DesktopOutlined,
+  UnorderedListOutlined,
+  AppstoreOutlined,
+  CompressOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
+import {
+  Card,
+  Col,
+  Row,
+  Segmented,
+  Space,
+  Typography,
+  message,
+} from "antd";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
+import { AuthSession } from "../../shared/api/auth";
+import {
+  DefaultView,
+  Language,
+  Theme,
+  UserPreference,
+  getPreference,
+  updatePreference,
+} from "../../shared/api/preferences";
+
+const { Title, Text } = Typography;
+
+type Props = {
+  session: AuthSession;
+  onPreferenceChange?: (pref: UserPreference) => void;
+};
+
+export function SettingsPage({ session, onPreferenceChange }: Props) {
+  const { t, i18n } = useTranslation();
+  const [preference, setPreference] = useState<UserPreference | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const loadPreference = useCallback(async () => {
+    try {
+      const pref = await getPreference(session);
+      setPreference(pref);
+      if (i18n.language !== pref.language) {
+        await i18n.changeLanguage(pref.language);
+      }
+    } catch (e) {
+      message.error(`加载偏好失败: ${e}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [session, i18n]);
+
+  useEffect(() => {
+    void loadPreference();
+  }, [loadPreference]);
+
+  const handleLanguageChange = async (lang: Language) => {
+    try {
+      const pref = await updatePreference(session, { language: lang });
+      setPreference(pref);
+      await i18n.changeLanguage(lang);
+      message.success(t("settings.saveSuccess"));
+      onPreferenceChange?.(pref);
+    } catch (e) {
+      message.error(t("settings.saveFailed"));
+    }
+  };
+
+  const handleThemeChange = async (theme: Theme) => {
+    try {
+      const pref = await updatePreference(session, { theme });
+      setPreference(pref);
+      message.success(t("settings.saveSuccess"));
+      onPreferenceChange?.(pref);
+    } catch (e) {
+      message.error(t("settings.saveFailed"));
+    }
+  };
+
+  const handleViewChange = async (view: DefaultView) => {
+    try {
+      const pref = await updatePreference(session, { default_view: view });
+      setPreference(pref);
+      message.success(t("settings.saveSuccess"));
+      onPreferenceChange?.(pref);
+    } catch (e) {
+      message.error(t("settings.saveFailed"));
+    }
+  };
+
+  if (loading || !preference) {
+    return (
+      <div style={{ padding: 24, textAlign: "center" }}>
+        <Typography.Text type="secondary">{t("common.loading")}</Typography.Text>
+      </div>
+    );
+  }
+
+  return (
+    <div className="settings-page">
+      <div className="source-section-header">
+        <div>
+          <Typography.Title level={4} style={{ marginBottom: 4 }}>
+            <Space>
+              <SettingOutlined />
+              {t("settings.title")}
+            </Space>
+          </Typography.Title>
+          <Typography.Text type="secondary">{t("settings.subtitle")}</Typography.Text>
+        </div>
+      </div>
+
+      <Row gutter={[24, 24]}>
+        <Col xs={24} md={12}>
+          <Card
+            title={
+              <Space>
+                <GlobalOutlined />
+                {t("settings.language")}
+              </Space>
+            }
+            styles={{ body: { padding: "20px 24px" } }}
+            style={{ borderRadius: "var(--radius-md)", height: "100%" }}
+          >
+            <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
+              {t("settings.languageDesc")}
+            </Text>
+            <Segmented
+              block
+              value={preference.language}
+              onChange={(value) => handleLanguageChange(value as Language)}
+              options={[
+                {
+                  label: (
+                    <Space>
+                      <span>🇨🇳</span>
+                      <span>简体中文</span>
+                      {preference.language === "zh-CN" && <CheckOutlined />}
+                    </Space>
+                  ),
+                  value: "zh-CN",
+                },
+                {
+                  label: (
+                    <Space>
+                      <span>🇺🇸</span>
+                      <span>English</span>
+                      {preference.language === "en-US" && <CheckOutlined />}
+                    </Space>
+                  ),
+                  value: "en-US",
+                },
+              ]}
+            />
+          </Card>
+        </Col>
+
+        <Col xs={24} md={12}>
+          <Card
+            title={
+              <Space>
+                <SunOutlined />
+                {t("settings.theme")}
+              </Space>
+            }
+            styles={{ body: { padding: "20px 24px" } }}
+            style={{ borderRadius: "var(--radius-md)", height: "100%" }}
+          >
+            <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
+              {t("settings.themeDesc")}
+            </Text>
+            <Segmented
+              block
+              value={preference.theme}
+              onChange={(value) => handleThemeChange(value as Theme)}
+              options={[
+                {
+                  label: (
+                    <Space>
+                      <SunOutlined />
+                      <span>{t("settings.themeLight")}</span>
+                      {preference.theme === "light" && <CheckOutlined />}
+                    </Space>
+                  ),
+                  value: "light",
+                },
+                {
+                  label: (
+                    <Space>
+                      <MoonOutlined />
+                      <span>{t("settings.themeDark")}</span>
+                      {preference.theme === "dark" && <CheckOutlined />}
+                    </Space>
+                  ),
+                  value: "dark",
+                },
+                {
+                  label: (
+                    <Space>
+                      <DesktopOutlined />
+                      <span>{t("settings.themeSystem")}</span>
+                      {preference.theme === "system" && <CheckOutlined />}
+                    </Space>
+                  ),
+                  value: "system",
+                },
+              ]}
+            />
+          </Card>
+        </Col>
+
+        <Col xs={24} md={12}>
+          <Card
+            title={
+              <Space>
+                <AppstoreOutlined />
+                {t("settings.defaultView")}
+              </Space>
+            }
+            styles={{ body: { padding: "20px 24px" } }}
+            style={{ borderRadius: "var(--radius-md)", height: "100%" }}
+          >
+            <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
+              {t("settings.defaultViewDesc")}
+            </Text>
+            <Segmented
+              block
+              value={preference.default_view}
+              onChange={(value) => handleViewChange(value as DefaultView)}
+              options={[
+                {
+                  label: (
+                    <Space>
+                      <UnorderedListOutlined />
+                      <span>{t("settings.viewList")}</span>
+                      {preference.default_view === "list" && <CheckOutlined />}
+                    </Space>
+                  ),
+                  value: "list",
+                },
+                {
+                  label: (
+                    <Space>
+                      <AppstoreOutlined />
+                      <span>{t("settings.viewGrid")}</span>
+                      {preference.default_view === "grid" && <CheckOutlined />}
+                    </Space>
+                  ),
+                  value: "grid",
+                },
+                {
+                  label: (
+                    <Space>
+                      <CompressOutlined />
+                      <span>{t("settings.viewCompact")}</span>
+                      {preference.default_view === "compact" && <CheckOutlined />}
+                    </Space>
+                  ),
+                  value: "compact",
+                },
+              ]}
+            />
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+}
