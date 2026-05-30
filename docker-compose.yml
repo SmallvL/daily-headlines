@@ -5,10 +5,10 @@ services:
     container_name: daily-headlines-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?请设置 MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-daily_headlines}
       MYSQL_USER: ${MYSQL_USER:-dailyhead}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-dailyhead123}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?请设置 MYSQL_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -45,10 +45,10 @@ services:
     container_name: daily-headlines-api
     restart: unless-stopped
     environment:
-      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-dailyhead}:${MYSQL_PASSWORD:-dailyhead123}@mysql:3306/${MYSQL_DATABASE:-daily_headlines}
-      JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-dailyhead}:${MYSQL_PASSWORD:?请设置 MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE:-daily_headlines}
+      JWT_SECRET: ${JWT_SECRET:?请设置 JWT_SECRET}
       DEV_ADMIN_USERNAME: ${DEV_ADMIN_USERNAME:-admin}
-      DEV_ADMIN_PASSWORD: ${DEV_ADMIN_PASSWORD:-admin123}
+      DEV_ADMIN_PASSWORD: ${DEV_ADMIN_PASSWORD:?请设置 DEV_ADMIN_PASSWORD}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost,http://localhost:80}
       SCHEDULER_ENABLED: "true"
       SCHEDULER_INTERVAL_SECONDS: "60"

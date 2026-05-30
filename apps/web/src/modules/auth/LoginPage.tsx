@@ -50,7 +50,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         {error ? <Alert type="error" message={error} showIcon className="form-alert" /> : null}
         <Form<LoginValues>
           layout="vertical"
-          initialValues={{ username: "admin", password: "admin123" }}
+          initialValues={{ username: "", password: "" }}
           onFinish={handleFinish}
         >
           <Form.Item

@@ -17,8 +17,8 @@ class Settings:
         )
     )
     dev_admin_username: str = os.getenv("DEV_ADMIN_USERNAME", "admin")
-    dev_admin_password: str = os.getenv("DEV_ADMIN_PASSWORD", "admin123")
-    jwt_secret: str = os.getenv("JWT_SECRET", "dev-secret-change-in-production")
+    dev_admin_password: str = os.getenv("DEV_ADMIN_PASSWORD", "")
+    jwt_secret: str = os.getenv("JWT_SECRET", "")
     jwt_algorithm: str = "HS256"
     jwt_expire_hours: int = int(os.getenv("JWT_EXPIRE_HOURS", "72"))
     scheduler_enabled: bool = os.getenv("SCHEDULER_ENABLED", "false").lower() == "true"
