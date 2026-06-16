@@ -13,12 +13,12 @@ def _to_read(p: UserPreference) -> UserPreferenceRead:
         language=p.language,
         theme=p.theme,
         default_view=p.default_view,
+        login_background_url=p.login_background_url,
         updated_at=p.updated_at,
     )
 
 
 def get_or_create_preference(db: Session, user: CurrentUser) -> UserPreferenceRead:
-    """Get user preference, create default if not exists."""
     pref = (
         db.query(UserPreference)
         .filter(UserPreference.user_id == user.id)
@@ -31,6 +31,7 @@ def get_or_create_preference(db: Session, user: CurrentUser) -> UserPreferenceRe
             language="zh-CN",
             theme="light",
             default_view="list",
+            login_background_url=None,
         )
         db.add(pref)
         db.commit()
@@ -41,7 +42,6 @@ def get_or_create_preference(db: Session, user: CurrentUser) -> UserPreferenceRe
 def update_preference(
     db: Session, user: CurrentUser, data: UserPreferenceUpdate
 ) -> UserPreferenceRead:
-    """Update user preference."""
     pref = (
         db.query(UserPreference)
         .filter(UserPreference.user_id == user.id)
