@@ -347,14 +347,12 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
 
   /* ───────── Grid Card ───────── */
   const renderGridCard = (item: FeedItem) => {
-    const readOpacity = item.is_read ? 0.6 : 1;
+    const readOpacity = item.is_read ? 0.5 : 1;
     return (
       <div
         key={item.id}
         className="dashboard-card"
-        style={{
-          opacity: readOpacity,
-        }}
+        style={{ opacity: readOpacity }}
       >
         {/* Image */}
         <div className="dashboard-card-cover">
@@ -384,25 +382,36 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
           <span className="cover-source-tag">
             {item.source_name}
           </span>
+          <span className="cover-badge cover-badge-right">
+            {relativeTime(item.published_at ?? item.fetched_at)}
+          </span>
         </div>
 
-        {/* Content */}
+        {/* Body */}
         <div className="dashboard-card-body">
-          {renderTitle(item)}
-          {item.summary ? (
-            <Typography.Paragraph
-              className="dashboard-card-summary"
-              ellipsis={{ rows: 2 }}
-              type="secondary"
-            >
-              {item.summary}
-            </Typography.Paragraph>
-          ) : null}
-          {renderMeta(item)}
+          <Typography.Text
+            strong
+            ellipsis={{ tooltip: item.title }}
+            style={{
+              fontSize: 14,
+              lineHeight: 1.5,
+              cursor: item.url ? "pointer" : "default",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+            onClick={() => {
+              handleTitleClick(item);
+              if (item.url) window.open(item.url, "_blank", "noopener,noreferrer");
+            }}
+          >
+            {item.title}
+          </Typography.Text>
         </div>
 
         {/* Actions */}
-        <div className="dashboard-card-actions">
+        <div className="dashboard-card-actions" style={{ opacity: item.is_read ? 0.5 : 1 }}>
           {renderActions(item)}
         </div>
       </div>
