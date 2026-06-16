@@ -6,6 +6,8 @@ import { useState } from "react";
 import { AuthSession } from "../../shared/api/auth";
 import { listAuditLogs } from "../../shared/api/admin";
 
+import { useTranslation } from "react-i18next";
+
 type AuditLogsPageProps = { session: AuthSession };
 
 const ACTION_COLORS: Record<string, string> = {
@@ -20,26 +22,27 @@ const ACTION_COLORS: Record<string, string> = {
   ignore: "default",
 };
 
-const ACTION_LABELS: Record<string, string> = {
-  create: "创建",
-  delete: "删除",
-  update_role: "修改角色",
-  update_status: "修改状态",
-  add_members: "添加成员",
-  remove_member: "移除成员",
-  push_template: "推送模板",
-  accept: "接受",
-  ignore: "忽略",
-};
 
-const RESOURCE_LABELS: Record<string, string> = {
-  user: "用户",
-  group: "组",
-  template: "模板",
-  push_subscription: "推送订阅",
-};
 
 export function AuditLogsPage({ session }: AuditLogsPageProps) {
+  const { t } = useTranslation();
+  const ACTION_LABELS: Record<string, string> = {
+    create: t("admin.actionCreate"),
+    delete: t("admin.actionDelete"),
+    update_role: t("admin.actionUpdateRole"),
+    update_status: t("admin.actionUpdateStatus"),
+    add_members: t("admin.actionAddMembers"),
+    remove_member: t("admin.actionRemoveMember"),
+    push_template: t("admin.actionPushTemplate"),
+    accept: t("admin.actionAccept"),
+    ignore: t("admin.actionIgnore"),
+  };
+  const RESOURCE_LABELS: Record<string, string> = {
+    user: t("admin.resourceUser"),
+    group: t("admin.resourceGroup"),
+    template: t("admin.resourceTemplate"),
+    push_subscription: t("admin.resourcePushSubscription"),
+  };
   const [actionFilter, setActionFilter] = useState<string | undefined>(undefined);
   const [resourceFilter, setResourceFilter] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
@@ -58,7 +61,7 @@ export function AuditLogsPage({ session }: AuditLogsPageProps) {
 
   const columns = [
     {
-      title: "操作",
+      title: t("admin.auditAction"),
       dataIndex: "action",
       key: "action",
       width: 120,
@@ -69,27 +72,27 @@ export function AuditLogsPage({ session }: AuditLogsPageProps) {
       ),
     },
     {
-      title: "资源类型",
+      title: t("admin.resourceType"),
       dataIndex: "resource_type",
       key: "resource_type",
       width: 120,
       render: (rt: string) => RESOURCE_LABELS[rt] ?? rt,
     },
     {
-      title: "资源 ID",
+      title: t("admin.resourceId"),
       dataIndex: "resource_id",
       key: "resource_id",
       ellipsis: true,
       render: (v: string | null) => v ?? "—",
     },
     {
-      title: "操作人",
+      title: t("admin.operator"),
       dataIndex: "actor_id",
       key: "actor_id",
       width: 140,
     },
     {
-      title: "详情",
+      title: t("admin.details"),
       dataIndex: "details",
       key: "details",
       ellipsis: true,
@@ -105,7 +108,7 @@ export function AuditLogsPage({ session }: AuditLogsPageProps) {
       ),
     },
     {
-      title: "时间",
+      title: t("admin.time"),
       dataIndex: "created_at",
       key: "created_at",
       width: 180,
@@ -116,7 +119,7 @@ export function AuditLogsPage({ session }: AuditLogsPageProps) {
 
   return (
     <div className="audit-logs-page">
-      <Typography.Title level={4}>审计日志</Typography.Title>
+      <Typography.Title level={4}>{t("admin.auditLogs")}</Typography.Title>
       <Space style={{ marginBottom: 16 }} wrap>
         <Select
           allowClear
@@ -127,15 +130,7 @@ export function AuditLogsPage({ session }: AuditLogsPageProps) {
             setActionFilter(v);
             setPage(1);
           }}
-          options={[
-            { label: "创建", value: "create" },
-            { label: "删除", value: "delete" },
-            { label: "修改角色", value: "update_role" },
-            { label: "修改状态", value: "update_status" },
-            { label: "添加成员", value: "add_members" },
-            { label: "移除成员", value: "remove_member" },
-            { label: "推送模板", value: "push_template" },
-          ]}
+          options={Object.entries(ACTION_LABELS).map(([value, label]) => ({ value, label }))}
         />
         <Select
           allowClear
@@ -146,18 +141,13 @@ export function AuditLogsPage({ session }: AuditLogsPageProps) {
             setResourceFilter(v);
             setPage(1);
           }}
-          options={[
-            { label: "用户", value: "user" },
-            { label: "组", value: "group" },
-            { label: "模板", value: "template" },
-            { label: "推送订阅", value: "push_subscription" },
-          ]}
+          options={Object.entries(RESOURCE_LABELS).map(([value, label]) => ({ value, label }))}
         />
         <Button
           icon={<ReloadOutlined />}
           onClick={() => logsQuery.refetch()}
         >
-          刷新
+          {t("admin.refresh")}
         </Button>
       </Space>
       <Table
@@ -171,7 +161,7 @@ export function AuditLogsPage({ session }: AuditLogsPageProps) {
           pageSize,
           total: logsQuery.data?.total ?? 0,
           onChange: setPage,
-          showTotal: (total) => `共 ${total} 条`,
+          showTotal: (total) => t("taskLogs.totalRecords", { total }),
         }}
       />
     </div>

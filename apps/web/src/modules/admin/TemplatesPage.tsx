@@ -31,9 +31,12 @@ import {
   pushTemplate,
 } from "../../shared/api/admin";
 
+import { useTranslation } from "react-i18next";
+
 type TemplatesPageProps = { session: AuthSession };
 
 export function TemplatesPage({ session }: TemplatesPageProps) {
+  const { t } = useTranslation();
   const [createOpen, setCreateOpen] = useState(false);
   const [pushOpen, setPushOpen] = useState<string | null>(null);
   const [pushTargetType, setPushTargetType] = useState("user");
@@ -108,20 +111,20 @@ export function TemplatesPage({ session }: TemplatesPageProps) {
   return (
     <div className="templates-page">
       {contextHolder}
-      <Typography.Title level={4}>公共信息源模板</Typography.Title>
+      <Typography.Title level={4}>{t("admin.templateManagement")}</Typography.Title>
       <Space style={{ marginBottom: 16 }}>
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => setCreateOpen(true)}
         >
-          创建模板
+          {t("admin.createTemplate")}
         </Button>
         <Button
           icon={<ReloadOutlined />}
           onClick={() => templatesQuery.refetch()}
         >
-          刷新
+          {t("admin.refresh")}
         </Button>
       </Space>
 
@@ -137,11 +140,11 @@ export function TemplatesPage({ session }: TemplatesPageProps) {
                 icon={<PushpinOutlined />}
                 onClick={() => setPushOpen(tpl.id)}
               >
-                推送
+                                 {t("admin.push")}
               </Button>,
               <Popconfirm
                 key="delete"
-                title="确定删除此模板？"
+                title={t("admin.deleteTemplateConfirm")}
                 onConfirm={() => handleDelete(tpl.id)}
               >
                 <Button size="small" danger icon={<DeleteOutlined />} />
@@ -174,7 +177,7 @@ export function TemplatesPage({ session }: TemplatesPageProps) {
 
       {/* Create Template Modal */}
       <Modal
-        title="创建公共模板"
+        title={t("admin.createTemplate")}
         open={createOpen}
         onOk={handleCreate}
         onCancel={() => {
@@ -185,14 +188,14 @@ export function TemplatesPage({ session }: TemplatesPageProps) {
         <Form form={form} layout="vertical" initialValues={{ type: "rss" }}>
           <Form.Item
             name="name"
-            label="名称"
+            label={t("admin.templateName")}
             rules={[{ required: true, message: "请输入名称" }]}
           >
             <Input placeholder="模板名称" />
           </Form.Item>
           <Form.Item
             name="type"
-            label="类型"
+            label={t("admin.templateType")}
             rules={[{ required: true }]}
           >
             <Select
@@ -204,12 +207,12 @@ export function TemplatesPage({ session }: TemplatesPageProps) {
           </Form.Item>
           <Form.Item
             name="endpoint"
-            label="端点 URL"
+            label={t("admin.endpointUrl")}
             rules={[{ required: true, message: "请输入 URL" }]}
           >
             <Input placeholder="https://example.com/feed.xml" />
           </Form.Item>
-          <Form.Item name="description" label="描述">
+          <Form.Item name="description" label={t("admin.description")}>
             <Input.TextArea rows={2} placeholder="可选描述" />
           </Form.Item>
         </Form>
@@ -217,7 +220,7 @@ export function TemplatesPage({ session }: TemplatesPageProps) {
 
       {/* Push Modal */}
       <Modal
-        title="推送给用户/组"
+        title={t("admin.pushTo")}
         open={!!pushOpen}
         onOk={handlePush}
         onCancel={() => {
@@ -226,7 +229,7 @@ export function TemplatesPage({ session }: TemplatesPageProps) {
         }}
       >
         <Form form={pushForm} layout="vertical">
-          <Form.Item label="推送目标">
+          <Form.Item label={t("admin.pushTarget")}>
             <Select
               value={pushTargetType}
               onChange={(v) => {
@@ -234,20 +237,20 @@ export function TemplatesPage({ session }: TemplatesPageProps) {
                 pushForm.resetFields(["target_ids"]);
               }}
               options={[
-                { label: "用户", value: "user" },
-                { label: "组", value: "group" },
+                { label: t("admin.user"), value: "user" },
+                { label: t("admin.group"), value: "group" },
               ]}
             />
           </Form.Item>
           <Form.Item
             name="target_ids"
-            label={pushTargetType === "user" ? "选择用户" : "选择组"}
+            label={pushTargetType === "user" ? t("admin.selectUsers") : t("admin.selectGroups")}
             rules={[{ required: true, message: "请选择至少一个目标" }]}
           >
             <Select
               mode="multiple"
               placeholder={
-                pushTargetType === "user" ? "选择用户" : "选择组"
+                pushTargetType === "user" ? t("admin.selectUsers") : t("admin.selectGroups")
               }
               options={
                 pushTargetType === "user"
@@ -256,7 +259,7 @@ export function TemplatesPage({ session }: TemplatesPageProps) {
                       value: u.id,
                     }))
                   : (groupsQuery.data ?? []).map((g) => ({
-                      label: `${g.name} (${g.member_count}人)`,
+                      label: `${g.name} (${t("admin.memberCount", { count: g.member_count })})`,
                       value: g.id,
                     }))
               }

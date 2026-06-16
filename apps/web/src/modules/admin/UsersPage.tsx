@@ -24,6 +24,8 @@ import {
   updateUserStatus,
 } from "../../shared/api/admin";
 
+import { useTranslation } from "react-i18next";
+
 type UsersPageProps = { session: AuthSession };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -32,6 +34,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export function UsersPage({ session }: UsersPageProps) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
@@ -82,45 +85,45 @@ export function UsersPage({ session }: UsersPageProps) {
 
   const columns = [
     {
-      title: "用户名",
+      title: t("admin.username"),
       dataIndex: "username",
       key: "username",
       width: 140,
     },
     {
-      title: "显示名",
+      title: t("admin.displayName"),
       dataIndex: "display_name",
       key: "display_name",
       width: 140,
     },
     {
-      title: "邮箱",
+      title: t("admin.email"),
       dataIndex: "email",
       key: "email",
       render: (v: string | null) => v ?? "—",
     },
     {
-      title: "角色",
+      title: t("admin.role"),
       dataIndex: "role",
       key: "role",
       width: 120,
       render: (role: string, record: AdminUser) => (
         <Switch
           checked={role === "admin"}
-          checkedChildren="管理员"
-          unCheckedChildren="普通用户"
+          checkedChildren={t("admin.admin")}
+          unCheckedChildren={t("admin.normalUser")}
           onChange={(checked) => handleRoleChange(record.id, checked)}
         />
       ),
     },
     {
-      title: "状态",
+      title: t("admin.status"),
       key: "status",
       width: 120,
       render: (_: unknown, record: AdminUser) => (
         <Space>
           <Tag color={STATUS_COLORS[record.status] ?? "default"}>
-            {record.status === "active" ? "正常" : "已禁用"}
+            {record.status === "active" ? t("admin.active") : t("admin.disabled")}
           </Tag>
           <Switch
             size="small"
@@ -131,7 +134,7 @@ export function UsersPage({ session }: UsersPageProps) {
       ),
     },
     {
-      title: "最后登录",
+      title: t("admin.lastLogin"),
       dataIndex: "last_login_at",
       key: "last_login_at",
       width: 180,
@@ -139,7 +142,7 @@ export function UsersPage({ session }: UsersPageProps) {
         v ? new Date(v).toLocaleString("zh-CN") : "—",
     },
     {
-      title: "创建时间",
+      title: t("admin.createdAt"),
       dataIndex: "created_at",
       key: "created_at",
       width: 180,
@@ -151,10 +154,10 @@ export function UsersPage({ session }: UsersPageProps) {
   return (
     <div className="users-page">
       {contextHolder}
-      <Typography.Title level={4}>用户管理</Typography.Title>
+      <Typography.Title level={4}>{t("admin.userManagement")}</Typography.Title>
       <Space style={{ marginBottom: 16 }}>
         <Input
-          placeholder="搜索用户名或显示名"
+          placeholder={t("admin.searchPlaceholder")}
           prefix={<SearchOutlined />}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -167,13 +170,13 @@ export function UsersPage({ session }: UsersPageProps) {
           icon={<PlusOutlined />}
           onClick={() => setCreateOpen(true)}
         >
-          创建用户
+          {t("admin.createUser")}
         </Button>
         <Button
           icon={<ReloadOutlined />}
           onClick={() => usersQuery.refetch()}
         >
-          刷新
+          {t("admin.refresh")}
         </Button>
       </Space>
       <Table
@@ -187,7 +190,7 @@ export function UsersPage({ session }: UsersPageProps) {
 
       {/* Create User Modal */}
       <Modal
-        title="创建用户"
+        title={t("admin.createUser")}
         open={createOpen}
         onOk={handleCreate}
         onCancel={() => {

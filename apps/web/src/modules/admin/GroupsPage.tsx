@@ -32,9 +32,12 @@ import {
   removeGroupMember,
 } from "../../shared/api/admin";
 
+import { useTranslation } from "react-i18next";
+
 type GroupsPageProps = { session: AuthSession };
 
 export function GroupsPage({ session }: GroupsPageProps) {
+  const { t } = useTranslation();
   const [createOpen, setCreateOpen] = useState(false);
   const [detailGroupId, setDetailGroupId] = useState<string | null>(null);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
@@ -119,20 +122,20 @@ export function GroupsPage({ session }: GroupsPageProps) {
   return (
     <div className="groups-page">
       {contextHolder}
-      <Typography.Title level={4}>组管理</Typography.Title>
+      <Typography.Title level={4}>{t("admin.groupManagement")}</Typography.Title>
       <Space style={{ marginBottom: 16 }}>
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => setCreateOpen(true)}
         >
-          创建组
+          {t("admin.createGroup")}
         </Button>
         <Button
           icon={<ReloadOutlined />}
           onClick={() => groupsQuery.refetch()}
         >
-          刷新
+          {t("admin.refresh")}
         </Button>
       </Space>
 
@@ -148,11 +151,11 @@ export function GroupsPage({ session }: GroupsPageProps) {
                 icon={<TeamOutlined />}
                 onClick={() => setDetailGroupId(group.id)}
               >
-                成员
+                                 {t("admin.members")}
               </Button>,
               <Popconfirm
                 key="delete"
-                title="确定删除此组？"
+                title={t("admin.deleteGroupConfirm")}
                 onConfirm={() => handleDelete(group.id)}
               >
                 <Button size="small" danger icon={<DeleteOutlined />} />
@@ -163,8 +166,8 @@ export function GroupsPage({ session }: GroupsPageProps) {
               title={group.name}
               description={
                 <Space>
-                  <span>{group.description || "无描述"}</span>
-                  <Tag>{group.member_count} 人</Tag>
+                  <span>{group.description || t("admin.noDescription")}</span>
+                  <Tag>{t("admin.memberCount", { count: group.member_count })}</Tag>
                 </Space>
               }
             />
@@ -174,7 +177,7 @@ export function GroupsPage({ session }: GroupsPageProps) {
 
       {/* Create Group Modal */}
       <Modal
-        title="创建组"
+        title={t("admin.createGroup")}
         open={createOpen}
         onOk={handleCreate}
         onCancel={() => {
@@ -185,12 +188,12 @@ export function GroupsPage({ session }: GroupsPageProps) {
         <Form form={form} layout="vertical">
           <Form.Item
             name="name"
-            label="组名"
+            label={t("admin.groupName")}
             rules={[{ required: true, message: "请输入组名" }]}
           >
             <Input placeholder="例如：产品团队" />
           </Form.Item>
-          <Form.Item name="description" label="描述">
+          <Form.Item name="description" label={t("admin.description")}>
             <Input.TextArea rows={2} placeholder="可选描述" />
           </Form.Item>
         </Form>
@@ -207,7 +210,7 @@ export function GroupsPage({ session }: GroupsPageProps) {
             icon={<UserAddOutlined />}
             onClick={() => setAddMemberOpen(true)}
           >
-            添加成员
+            {t("admin.addMember")}
           </Button>
         }
         width={600}
@@ -221,11 +224,11 @@ export function GroupsPage({ session }: GroupsPageProps) {
               actions={[
                 <Popconfirm
                   key="rm"
-                  title="确定移除此成员？"
+                  title={t("admin.removeMemberConfirm")}
                   onConfirm={() => handleRemoveMember(member.user_id)}
                 >
                   <Button size="small" danger>
-                    移除
+                    {t("admin.remove")}
                   </Button>
                 </Popconfirm>,
               ]}
@@ -241,7 +244,7 @@ export function GroupsPage({ session }: GroupsPageProps) {
 
       {/* Add Member Modal */}
       <Modal
-        title="添加成员"
+        title={t("admin.addMember")}
         open={addMemberOpen}
         onOk={handleAddMembers}
         onCancel={() => {
@@ -252,7 +255,7 @@ export function GroupsPage({ session }: GroupsPageProps) {
         <Form form={addForm} layout="vertical">
           <Form.Item
             name="user_ids"
-            label="选择用户"
+            label={t("admin.selectUsers")}
             rules={[{ required: true, message: "请选择至少一个用户" }]}
           >
             <select multiple style={{ width: "100%", minHeight: 120 }}>
