@@ -2,7 +2,7 @@ import shutil
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -18,12 +18,12 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 
 @router.post("/login-background", response_model=ApiResponse[dict])
 def upload_login_background(
+    user: CurrentUserDep,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
-    user: CurrentUserDep = None,
 ):
     if file.content_type not in ALLOWED_IMAGE_TYPES:
-        raise ValueError("仅支持 JPEG/PNG/WebP/GIF 图片")
+        raise HTTPException(status_code=400, detail="仅支持 JPEG/PNG/WebP/GIF 图片")
 
     uploads_dir = settings.uploads_dir
     uploads_dir.mkdir(parents=True, exist_ok=True)
@@ -32,7 +32,7 @@ def upload_login_background(
     if ext not in {".jpg", ".jpeg", ".png", ".webp", ".gif"}:
         ext = ".jpg"
 
-    filename = f"login-bg-{user.id}-{uuid.uuid4().hex[:8]}{ext}"
+    filename = f"login-bg-{user.id}-{uuid.uuid4().hex}{ext}"
     file_path = uploads_dir / filename
 
     with file_path.open("wb") as buffer:
@@ -41,7 +41,7 @@ def upload_login_background(
     # Basic size check after write
     if file_path.stat().st_size > MAX_FILE_SIZE:
         file_path.unlink()
-        raise ValueError("图片大小不能超过 5MB")
+        raise HTTPException(status_code=400, detail="图片大小不能超过 5MB")
 
     url = f"{settings.uploads_url_path}/{filename}"
     return ApiResponse(data={"url": url})
