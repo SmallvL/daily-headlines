@@ -947,15 +947,21 @@ body {
 .dashboard-list-item {
   display: flex;
   gap: 14px;
-  padding: 14px 0;
+  padding: 14px 16px;
+  margin: 0 -16px;
+  border-radius: 8px;
   border-bottom: 1px solid var(--color-border-subtle);
-  transition: opacity 0.2s;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.dashboard-list-item:hover {
+  background: var(--color-bg-hover, #f8f9fc);
 }
 
 .dashboard-list-thumb {
-  width: 200px;
-  min-height: 120px;
-  border-radius: 6px;
+  width: 160px;
+  min-height: 100px;
+  border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
   background: var(--color-bg-layout);
@@ -971,9 +977,15 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 0;
+  padding: 10px 12px;
+  margin: 0 -12px;
+  border-radius: 6px;
   border-bottom: 1px solid var(--color-border-subtle);
-  transition: opacity 0.2s;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.dashboard-compact-row:hover {
+  background: var(--color-bg-hover, #f8f9fc);
 }
 
 .compact-source {
