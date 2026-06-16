@@ -91,6 +91,15 @@ def create_app() -> FastAPI:
     app.include_router(data_mgmt_router, prefix="/api/data-mgmt", tags=["data-management"])
     app.include_router(upload_router, prefix="/api/upload", tags=["upload"])
 
+    # Serve uploaded files as static files
+    uploads_dir = settings.uploads_dir
+    uploads_dir.mkdir(parents=True, exist_ok=True)
+    app.mount(
+        settings.uploads_url_path,
+        StaticFiles(directory=str(uploads_dir)),
+        name="uploads",
+    )
+
     # Serve frontend static files
     static_dir = Path(__file__).parent.parent / "static"
     if static_dir.is_dir():

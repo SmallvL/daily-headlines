@@ -28,6 +28,12 @@ class Settings:
         default_factory=lambda: Path(os.getenv("UPLOADS_DIR", "./uploads")).resolve()
     )
     uploads_url_path: str = os.getenv("UPLOADS_URL_PATH", "/uploads")
+    upload_max_size_bytes: int = int(os.getenv("UPLOAD_MAX_SIZE_BYTES", str(5 * 1024 * 1024)))
+    upload_allowed_image_types: list[str] = field(
+        default_factory=lambda: _split_csv(
+            os.getenv("UPLOAD_ALLOWED_IMAGE_TYPES", "image/jpeg,image/png,image/webp,image/gif")
+        )
+    )
 
 
 settings = Settings()
