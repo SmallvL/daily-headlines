@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Literal
+from urllib.parse import urlparse
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, field_validator
 
 Language = Literal["zh-CN", "en-US"]
 Theme = Literal["light", "dark", "system"]
@@ -21,13 +22,17 @@ class UserPreferenceUpdate(BaseModel):
     language: Language | None = None
     theme: Theme | None = None
     default_view: DefaultView | None = None
-    login_background_url: str | None = Field(default=None)
+    login_background_url: str | None = None
 
     @field_validator("login_background_url")
     @classmethod
     def validate_login_background_url(cls, v: str | None) -> str | None:
         if v is None:
             return v
-        if not (v.startswith("http://") or v.startswith("https://")):
-            raise ValueError("URL must start with http:// or https://")
+        v = v.strip()
+        if any(ord(ch) < 32 for ch in v):
+            raise ValueError("URL must not contain control characters")
+        parsed = urlparse(v)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            raise ValueError("Invalid URL")
         return v

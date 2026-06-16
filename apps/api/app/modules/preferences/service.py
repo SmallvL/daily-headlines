@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.modules.auth.schemas import CurrentUser
 from app.modules.preferences.models import UserPreference
 from app.modules.preferences.schemas import UserPreferenceRead, UserPreferenceUpdate
+from app.modules.users.models import User
 
 
 def _to_read(p: UserPreference) -> UserPreferenceRead:
@@ -38,6 +39,24 @@ def get_or_create_preference(db: Session, user: CurrentUser) -> UserPreferenceRe
         db.commit()
         db.refresh(pref)
     return _to_read(pref)
+
+
+def get_login_background(db: Session) -> str | None:
+    """Return the admin's login background URL, or None if no admin exists."""
+    admin = (
+        db.query(User)
+        .filter(User.role == "admin")
+        .order_by(User.created_at.asc(), User.id.asc())
+        .first()
+    )
+    if not admin:
+        return None
+    pref = (
+        db.query(UserPreference)
+        .filter(UserPreference.user_id == admin.id)
+        .first()
+    )
+    return pref.login_background_url if pref else None
 
 
 def update_preference(
