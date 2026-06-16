@@ -26,6 +26,7 @@ html[data-theme="dark"] {
   --color-bg: #141414;
   --color-bg-subtle: #1f1f1f;
   --color-bg-muted: #1a1a1a;
+  --color-bg-hover: rgba(255, 255, 255, 0.06);
   --color-border: #303030;
   --color-border-subtle: #262626;
   --color-text: #e8e8e8;
@@ -37,6 +38,9 @@ html[data-theme="dark"] {
     0 3px 6px -4px rgba(0, 0, 0, 0.25), 0 9px 28px 8px rgba(0, 0, 0, 0.2);
   .dashboard-toolbar {
     background: var(--ant-color-bg-container);
+  }
+  .dashboard-page {
+    background: none;
   }
 }
 
@@ -925,12 +929,6 @@ body {
   gap: 4px;
 }
 
-.dashboard-card-summary {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.6;
-}
-
 .dashboard-card-actions {
   padding: 0 8px 8px;
   display: flex;
@@ -942,6 +940,7 @@ body {
 .dashboard-feed-list {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .dashboard-list-item {
@@ -971,6 +970,7 @@ body {
 .dashboard-feed-compact {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .dashboard-compact-row {
