@@ -36,6 +36,7 @@
     "password": "Password",
     "loginTitle": "Login",
     "loginSubtitle": "Sign in to manage your personal information sources, subscriptions and daily feed.",
+    "loginSlogan": "Aggregate the content you care about",
     "loginButton": "Sign In",
     "loginSuccess": "Login successful",
     "loginFailed": "Login failed",

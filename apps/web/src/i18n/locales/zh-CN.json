@@ -36,6 +36,7 @@
     "password": "密码",
     "loginTitle": "登录",
     "loginSubtitle": "登录后管理你的个人信息源、订阅和每日信息流。",
+    "loginSlogan": "汇聚你关心的内容",
     "loginButton": "登录",
     "loginSuccess": "登录成功",
     "loginFailed": "登录失败",
