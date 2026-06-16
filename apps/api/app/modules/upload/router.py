@@ -1,12 +1,9 @@
-import shutil
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from app.core.config import settings
-from app.core.database import get_db
 from app.modules.auth.router import CurrentUserDep
 from app.shared.responses import ApiResponse
 
@@ -20,7 +17,6 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 def upload_login_background(
     user: CurrentUserDep,
     file: UploadFile = File(...),
-    db: Session = Depends(get_db),
 ):
     if file.content_type not in ALLOWED_IMAGE_TYPES:
         raise HTTPException(status_code=400, detail="仅支持 JPEG/PNG/WebP/GIF 图片")
@@ -32,14 +28,25 @@ def upload_login_background(
     if ext not in {".jpg", ".jpeg", ".png", ".webp", ".gif"}:
         ext = ".jpg"
 
-    filename = f"login-bg-{user.id}-{uuid.uuid4().hex}{ext}"
+    filename = f"login-bg-{user.id}-{uuid.uuid4()}{ext}"
     file_path = uploads_dir / filename
 
-    with file_path.open("wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    # Fast path: reject immediately if the framework already knows the size.
+    known_size = getattr(file, "size", None)
+    if known_size is not None and known_size > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail="图片大小不能超过 5MB")
 
-    # Basic size check after write
-    if file_path.stat().st_size > MAX_FILE_SIZE:
+    total = 0
+    oversized = False
+    with file_path.open("wb") as buffer:
+        while chunk := file.file.read(8192):
+            total += len(chunk)
+            if total > MAX_FILE_SIZE:
+                oversized = True
+                break
+            buffer.write(chunk)
+
+    if oversized:
         file_path.unlink()
         raise HTTPException(status_code=400, detail="图片大小不能超过 5MB")
 
