@@ -12,13 +12,13 @@ class UserPreference(Base):
         String(64), nullable=False, index=True, unique=True
     )
     language: Mapped[str] = mapped_column(
-        String(10), nullable=False, default="zh-CN"
+        String(10), nullable=False, default="zh-CN"  # zh-CN | en-US
     )
     theme: Mapped[str] = mapped_column(
-        String(20), nullable=False, default="light"
+        String(20), nullable=False, default="light"  # light | dark | system
     )
     default_view: Mapped[str] = mapped_column(
-        String(20), nullable=False, default="list"
+        String(20), nullable=False, default="list"  # list | grid | compact
     )
     login_background_url: Mapped[str | None] = mapped_column(
         Text, nullable=True, default=None

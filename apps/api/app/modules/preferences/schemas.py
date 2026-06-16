@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 
 Language = Literal["zh-CN", "en-US"]
 Theme = Literal["light", "dark", "system"]
@@ -21,4 +21,4 @@ class UserPreferenceUpdate(BaseModel):
     language: Language | None = None
     theme: Theme | None = None
     default_view: DefaultView | None = None
-    login_background_url: str | None = Field(default=None)
+    login_background_url: HttpUrl | None = Field(default=None)

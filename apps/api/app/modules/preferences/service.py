@@ -19,6 +19,7 @@ def _to_read(p: UserPreference) -> UserPreferenceRead:
 
 
 def get_or_create_preference(db: Session, user: CurrentUser) -> UserPreferenceRead:
+    """Get user preference, create default if not exists."""
     pref = (
         db.query(UserPreference)
         .filter(UserPreference.user_id == user.id)
@@ -42,6 +43,7 @@ def get_or_create_preference(db: Session, user: CurrentUser) -> UserPreferenceRe
 def update_preference(
     db: Session, user: CurrentUser, data: UserPreferenceUpdate
 ) -> UserPreferenceRead:
+    """Update user preference."""
     pref = (
         db.query(UserPreference)
         .filter(UserPreference.user_id == user.id)
