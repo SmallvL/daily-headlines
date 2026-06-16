@@ -27,6 +27,7 @@ from app.modules.proxy.router import router as proxy_router
 from app.modules.scheduler.service import scheduler_service
 from app.modules.search.router import router as search_router
 from app.modules.sources.router import router as sources_router
+from app.modules.upload.router import router as upload_router
 from app.modules.users.router import router as users_router
 
 logging.basicConfig(
@@ -88,6 +89,7 @@ def create_app() -> FastAPI:
     app.include_router(proxy_router, prefix="/api/proxy", tags=["proxy"])
     app.include_router(plugins_router, prefix="/api/plugins", tags=["plugins"])
     app.include_router(data_mgmt_router, prefix="/api/data-mgmt", tags=["data-management"])
+    app.include_router(upload_router, prefix="/api/upload", tags=["upload"])
 
     # Serve frontend static files
     static_dir = Path(__file__).parent.parent / "static"

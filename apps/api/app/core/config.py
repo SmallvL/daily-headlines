@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass, field
+from pathlib import Path
 
 
 def _split_csv(value: str) -> list[str]:
@@ -23,6 +24,10 @@ class Settings:
     jwt_expire_hours: int = int(os.getenv("JWT_EXPIRE_HOURS", "72"))
     scheduler_enabled: bool = os.getenv("SCHEDULER_ENABLED", "false").lower() == "true"
     scheduler_interval_seconds: int = int(os.getenv("SCHEDULER_INTERVAL_SECONDS", "60"))
+    uploads_dir: Path = field(
+        default_factory=lambda: Path(os.getenv("UPLOADS_DIR", "./uploads")).resolve()
+    )
+    uploads_url_path: str = os.getenv("UPLOADS_URL_PATH", "/uploads")
 
 
 settings = Settings()
