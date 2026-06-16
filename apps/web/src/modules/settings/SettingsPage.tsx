@@ -8,16 +8,23 @@ import {
   AppstoreOutlined,
   CompressOutlined,
   SettingOutlined,
+  PictureOutlined,
+  DeleteOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import {
+  Button,
   Card,
   Col,
   Row,
   Segmented,
   Space,
   Typography,
+  Upload,
   message,
 } from "antd";
+import type { UploadChangeParam } from "antd/es/upload/interface";
+import type { UploadRequestOption } from "rc-upload/lib/interface";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -30,6 +37,7 @@ import {
   getPreference,
   updatePreference,
 } from "../../shared/api/preferences";
+import { uploadLoginBackground } from "../../shared/api/upload";
 
 const { Title, Text } = Typography;
 
@@ -90,6 +98,41 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
       setPreference(pref);
       message.success(t("settings.saveSuccess"));
       onPreferenceChange?.(pref);
+    } catch (e) {
+      message.error(t("settings.saveFailed"));
+    }
+  };
+
+  const handleUploadChange = async (info: UploadChangeParam) => {
+    const { file } = info;
+    if (file.status === "uploading") {
+      return;
+    }
+    if (file.status === "done") {
+      message.success("背景图已上传");
+    }
+  };
+
+  const customUpload = async (options: UploadRequestOption) => {
+    try {
+      const file = options.file as File;
+      const { url } = await uploadLoginBackground(session, file);
+      const pref = await updatePreference(session, { login_background_url: url });
+      setPreference(pref);
+      onPreferenceChange?.(pref);
+      (options.onSuccess as (value: unknown) => void)?.(url);
+    } catch (e) {
+      message.error(e instanceof Error ? e.message : "上传失败");
+      (options.onError as (error: Error) => void)?.(e instanceof Error ? e : new Error("上传失败"));
+    }
+  };
+
+  const handleClearBackground = async () => {
+    try {
+      const pref = await updatePreference(session, { login_background_url: null });
+      setPreference(pref);
+      onPreferenceChange?.(pref);
+      message.success("已恢复默认背景");
     } catch (e) {
       message.error(t("settings.saveFailed"));
     }
@@ -267,6 +310,50 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
                 },
               ]}
             />
+          </Card>
+        </Col>
+
+        <Col xs={24} md={12}>
+          <Card
+            title={
+              <Space>
+                <PictureOutlined />
+                登录页背景
+              </Space>
+            }
+            styles={{ body: { padding: "20px 24px" } }}
+            style={{ borderRadius: "var(--radius-md)", height: "100%" }}
+          >
+            <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
+              自定义登录页背景图，留空则使用默认渐变。
+            </Text>
+            {preference.login_background_url ? (
+              <Space direction="vertical" style={{ width: "100%" }}>
+                <div
+                  style={{
+                    width: "100%",
+                    height: 100,
+                    borderRadius: 8,
+                    backgroundImage: `url(${import.meta.env.VITE_API_BASE_URL ?? ""}${preference.login_background_url})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    border: "1px solid var(--color-border-subtle)",
+                  }}
+                />
+                <Button icon={<DeleteOutlined />} danger onClick={handleClearBackground}>
+                  清除背景图
+                </Button>
+              </Space>
+            ) : (
+              <Upload
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                customRequest={customUpload}
+                onChange={handleUploadChange}
+                showUploadList={false}
+              >
+                <Button icon={<UploadOutlined />}>上传背景图</Button>
+              </Upload>
+            )}
           </Card>
         </Col>
       </Row>
