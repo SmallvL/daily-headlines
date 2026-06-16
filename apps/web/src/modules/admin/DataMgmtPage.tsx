@@ -18,6 +18,7 @@ import {
   Typography,
 } from "antd";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import type { AuthSession } from "../../shared/api/auth";
 import {
@@ -72,6 +73,7 @@ function fmtDate(s: string | null): string {
 }
 
 export default function DataMgmtPage({ session }: Props) {
+  const { t } = useTranslation();
   const [messageApi, contextHolder] = message.useMessage();
   const [purgePreviews, setPurgePreviews] = useState<PurgePreview[]>([]);
   const [purgeModalOpen, setPurgeModalOpen] = useState(false);
@@ -156,7 +158,7 @@ export default function DataMgmtPage({ session }: Props) {
       {contextHolder}
 
       <Typography.Title level={4} style={{ marginBottom: 24 }}>
-        📦 数据管理
+        {t("admin.dataMgmtTitle")}
       </Typography.Title>
 
       {/* ── Overview Cards ── */}
@@ -164,7 +166,7 @@ export default function DataMgmtPage({ session }: Props) {
         <Col xs={12} sm={6}>
           <Card>
             <Statistic
-              title="数据库大小"
+              title={t("admin.databaseSize")}
               value={stats?.db_size_mb ?? "—"}
               suffix="MB"
               precision={3}
@@ -174,7 +176,7 @@ export default function DataMgmtPage({ session }: Props) {
         <Col xs={12} sm={6}>
           <Card>
             <Statistic
-              title="总记录数"
+              title={t("admin.totalRecords")}
               value={stats?.total_records ?? "—"}
               formatter={(v) => fmtNum(v as number)}
             />
@@ -183,7 +185,7 @@ export default function DataMgmtPage({ session }: Props) {
         <Col xs={12} sm={6}>
           <Card>
             <Statistic
-              title="可增长表"
+              title={t("admin.growableTables")}
               value={growthTables.length}
               suffix={`/ ${stats?.tables.length ?? "—"}`}
             />
@@ -193,7 +195,7 @@ export default function DataMgmtPage({ session }: Props) {
           <Card>
             <Space direction="vertical" size={4} style={{ width: "100%" }}>
               <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                操作
+                {t("admin.actions")}
               </Typography.Text>
               <Button
                 type="primary"
@@ -202,7 +204,7 @@ export default function DataMgmtPage({ session }: Props) {
                 loading={previewMut.isPending}
                 onClick={() => previewMut.mutate()}
               >
-                预览清理
+                {t("admin.previewCleanup")}
               </Button>
               <Button
                 size="small"
@@ -210,7 +212,7 @@ export default function DataMgmtPage({ session }: Props) {
                 loading={vacuumMut.isPending}
                 onClick={() => vacuumMut.mutate()}
               >
-                VACUUM
+                {t("admin.vacuum")}
               </Button>
             </Space>
           </Card>
@@ -236,7 +238,7 @@ export default function DataMgmtPage({ session }: Props) {
       )}
 
       {/* ── Table Size Visualization ── */}
-      <Card title="📊 各表数据量" style={{ marginBottom: 24 }}>
+      <Card title={t("admin.tableData")} style={{ marginBottom: 24 }}>
         <Space direction="vertical" style={{ width: "100%" }} size={8}>
           {growthTables.map((t) => (
             <div key={t.table_name} style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -258,7 +260,7 @@ export default function DataMgmtPage({ session }: Props) {
       </Card>
 
       {/* ── Retention Configs ── */}
-      <Card title="⚙️ 数据保留策略" style={{ marginBottom: 24 }}>
+      <Card title={t("admin.retentionPolicy")} style={{ marginBottom: 24 }}>
         <Table
           dataSource={configs}
           rowKey="id"
@@ -266,12 +268,12 @@ export default function DataMgmtPage({ session }: Props) {
           pagination={false}
           columns={[
             {
-              title: "数据表",
+              title: t("admin.tableName"),
               dataIndex: "table_name",
               render: (v: string) => TABLE_LABELS[v] ?? v,
             },
             {
-              title: "保留天数",
+              title: t("admin.retentionDays"),
               dataIndex: "max_age_days",
               width: 120,
               render: (v: number | null, record: RetentionConfig) => (
@@ -292,7 +294,7 @@ export default function DataMgmtPage({ session }: Props) {
               ),
             },
             {
-              title: "每源上限",
+              title: t("admin.perSourceLimit"),
               dataIndex: "max_records",
               width: 120,
               render: (v: number | null, record: RetentionConfig) => (
@@ -314,7 +316,7 @@ export default function DataMgmtPage({ session }: Props) {
               ),
             },
             {
-              title: "保留收藏",
+              title: t("admin.keepFavorites"),
               dataIndex: "keep_saved",
               width: 80,
               render: (v: boolean, record: RetentionConfig) => (
@@ -332,7 +334,7 @@ export default function DataMgmtPage({ session }: Props) {
               ),
             },
             {
-              title: "启用",
+              title: t("admin.enabled"),
               dataIndex: "enabled",
               width: 60,
               render: (v: boolean, record: RetentionConfig) => (
@@ -349,7 +351,7 @@ export default function DataMgmtPage({ session }: Props) {
               ),
             },
             {
-              title: "上次清理",
+              title: t("admin.lastCleaned"),
               dataIndex: "last_purge_at",
               width: 120,
               render: (v: string | null, record: RetentionConfig) =>
@@ -361,7 +363,7 @@ export default function DataMgmtPage({ session }: Props) {
                     )}
                   </Space>
                 ) : (
-                  <Typography.Text type="secondary">从未</Typography.Text>
+                  <Typography.Text type="secondary">{t("admin.never")}</Typography.Text>
                 ),
             },
           ]}
@@ -369,7 +371,7 @@ export default function DataMgmtPage({ session }: Props) {
       </Card>
 
       {/* ── Export ── */}
-      <Card title="📤 数据导出">
+      <Card title={t("admin.dataExport")}>
         <Space>
           <Button
             onClick={() => {
@@ -380,7 +382,7 @@ export default function DataMgmtPage({ session }: Props) {
               );
             }}
           >
-            导出 JSON
+            {t("admin.exportJson")}
           </Button>
           <Button
             onClick={() => {
@@ -391,19 +393,19 @@ export default function DataMgmtPage({ session }: Props) {
               );
             }}
           >
-            导出 CSV
+            {t("admin.exportCsv")}
           </Button>
         </Space>
       </Card>
 
       {/* ── Purge Preview Modal ── */}
       <Modal
-        title="清理预览"
+        title={t("admin.cleanupPreview")}
         open={purgeModalOpen}
         onCancel={() => setPurgeModalOpen(false)}
         footer={
           <Space>
-            <Button onClick={() => setPurgeModalOpen(false)}>取消</Button>
+            <Button onClick={() => setPurgeModalOpen(false)}>{t("admin.cancel")}</Button>
             <Button
               type="primary"
               danger
@@ -411,7 +413,7 @@ export default function DataMgmtPage({ session }: Props) {
               onClick={() => purgeMut.mutate()}
               disabled={purgePreviews.length === 0}
             >
-              {purgePreviews.length === 0 ? "无需清理" : "确认清理"}
+              {purgePreviews.length === 0 ? t("admin.noCleanup") : t("admin.confirmCleanup")}
             </Button>
           </Space>
         }
@@ -423,11 +425,11 @@ export default function DataMgmtPage({ session }: Props) {
             {purgePreviews.map((p) => (
               <Card key={p.table_name} size="small">
                 <Descriptions column={1} size="small">
-                  <Descriptions.Item label="数据表">
+                   <Descriptions.Item label={t("admin.tableName")}>
                     {TABLE_LABELS[p.table_name] ?? p.table_name}
                   </Descriptions.Item>
-                  <Descriptions.Item label="待删除">{fmtNum(p.records_to_delete)} 条</Descriptions.Item>
-                  <Descriptions.Item label="条件">{p.criteria}</Descriptions.Item>
+                   <Descriptions.Item label={t("admin.toDelete")}>{fmtNum(p.records_to_delete)} 条</Descriptions.Item>
+                   <Descriptions.Item label={t("admin.conditions")}>{p.criteria}</Descriptions.Item>
                 </Descriptions>
               </Card>
             ))}

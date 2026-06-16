@@ -27,6 +27,7 @@ import {
   message,
 } from "antd";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AuthSession } from "../../shared/api/auth";
 import {
@@ -50,6 +51,7 @@ const { Text, Title, Paragraph } = Typography;
 type Props = { session: AuthSession; onCreateSource?: () => void };
 
 export function AgentPage({ session, onCreateSource }: Props) {
+  const { t } = useTranslation();
   // ── Provider state ──
   const [providers, setProviders] = useState<LlmProvider[]>([]);
   const [providerModalOpen, setProviderModalOpen] = useState(false);
@@ -214,9 +216,9 @@ export function AgentPage({ session, onCreateSource }: Props) {
 
   const statusTag = (status: string) => {
     const map: Record<string, { color: string; label: string }> = {
-      drafting: { color: "processing", label: "生成中" },
-      ready: { color: "success", label: "就绪" },
-      confirmed: { color: "default", label: "已确认" },
+      drafting: { color: "processing", label: t("agent.generating") },
+      ready: { color: "success", label: t("agent.ready") },
+      confirmed: { color: "default", label: t("agent.confirmed") },
       failed: { color: "error", label: "失败" },
     };
     const s = map[status] ?? { color: "default", label: status };
@@ -244,19 +246,19 @@ export function AgentPage({ session, onCreateSource }: Props) {
   return (
     <div className="agent-page">
       <Title level={3}>
-        <RobotOutlined /> AI Agent 源
+        <RobotOutlined /> {t("agent.title")}
       </Title>
       <Paragraph type="secondary">
-        用 AI 描述你想要的信息源，自动生成配置草稿。确认后可直接创建为正式信息源。
+        {t("agent.subtitle")}
       </Paragraph>
 
       {/* ── Steps ── */}
       <Steps
         current={currentStep}
         items={[
-          { title: "输入需求", description: "描述信息源" },
-          { title: "编辑草稿", description: "AI 生成" },
-          { title: "完成", description: "创建信息源" },
+          { title: t("agent.step1"), description: "描述信息源" },
+          { title: t("agent.editDraft"), description: "AI 生成" },
+          { title: t("agent.complete"), description: "创建信息源" },
         ]}
         style={{ marginBottom: 24 }}
       />
@@ -265,7 +267,7 @@ export function AgentPage({ session, onCreateSource }: Props) {
       {currentStep === 0 && (
         <Row gutter={24}>
           <Col span={16}>
-            <Card title="需求描述">
+            <Card title={t("agent.inputRequirement")}>
               <Form layout="vertical">
                 <Form.Item label="LLM Provider">
                   <Space.Compact style={{ width: "100%" }}>
@@ -303,7 +305,7 @@ export function AgentPage({ session, onCreateSource }: Props) {
                     onClick={handleGenerate}
                     size="large"
                   >
-                    AI 生成草稿
+                    {t("agent.generateDraft")}
                   </Button>
                 </Form.Item>
               </Form>
@@ -325,7 +327,7 @@ export function AgentPage({ session, onCreateSource }: Props) {
           </Col>
 
           <Col span={8}>
-            <Card title="Provider 管理" size="small">
+            <Card title={t("agent.providerManagement")} size="small">
               {providers.length === 0 ? (
                 <Alert
                   message="未配置 Provider"
@@ -384,7 +386,7 @@ export function AgentPage({ session, onCreateSource }: Props) {
                 onClick={() => setProviderModalOpen(true)}
                 style={{ marginTop: 8 }}
               >
-                添加 Provider
+                {t("agent.addProvider")}
               </Button>
             </Card>
           </Col>
@@ -396,17 +398,17 @@ export function AgentPage({ session, onCreateSource }: Props) {
         <Row gutter={24}>
           <Col span={14}>
             <Card
-              title="AI 生成的源配置草稿"
+              title={t("agent.draftPreview")}
               extra={
                 <Space>
-                  <Button onClick={handleReset}>重新输入</Button>
+                  <Button onClick={handleReset}>{t("agent.reenter")}</Button>
                   <Button
                     type="primary"
                     icon={<RocketOutlined />}
                     loading={confirming}
                     onClick={handleConfirm}
                   >
-                    确认并创建信息源
+                    {t("agent.confirmAndCreate")}
                   </Button>
                 </Space>
               }
@@ -483,7 +485,7 @@ export function AgentPage({ session, onCreateSource }: Props) {
               })()}
             </Card>
 
-            <Card title="原始需求" size="small" style={{ marginTop: 16 }}>
+            <Card title={t("agent.originalRequirement")} size="small" style={{ marginTop: 16 }}>
               <Paragraph style={{ whiteSpace: "pre-wrap" }}>
                 {currentDraft.prompt_md}
               </Paragraph>
@@ -525,7 +527,7 @@ export function AgentPage({ session, onCreateSource }: Props) {
               <Button type="primary" onClick={onCreateSource}>
                 查看信息源
               </Button>
-              <Button onClick={handleReset}>创建新源</Button>
+              <Button onClick={handleReset}>{t("agent.createNew")}</Button>
             </Space>
           </div>
         </Card>
@@ -533,7 +535,7 @@ export function AgentPage({ session, onCreateSource }: Props) {
 
       {/* ── Draft history ── */}
       <Divider />
-      <Card title={`草稿历史 (${draftTotal})`} size="small">
+      <Card title={`${t("agent.draftHistoryTab")} (${draftTotal})`} size="small">
         <Table
           dataSource={drafts}
           rowKey="id"
@@ -586,9 +588,9 @@ export function AgentPage({ session, onCreateSource }: Props) {
                       size="small"
                       icon={<EditOutlined />}
                       onClick={() => handleLoadDraft(r)}
-                    >
-                      编辑
-                    </Button>
+                  >
+                    {t("agent.edit")}
+                  </Button>
                   )}
                   <Popconfirm
                     title="确定删除？"
