@@ -1,0 +1,65 @@
+<h2>登录页最终设计</h2>
+<p class="subtitle">基于你的选择：方案 B（左右分屏 · 极简专业）</p>
+
+<div class="mockup">
+  <div class="mockup-header">桌面端预览</div>
+  <div class="mockup-body" style="display:flex;min-height:260px;border-radius:12px;overflow:hidden">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#1677ff;color:#fff;padding:32px;text-align:center">
+      <div style="width:56px;height:56px;border-radius:14px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:20px">📰</div>
+      <div style="font-size:22px;font-weight:700;letter-spacing:-0.01em;margin-bottom:8px">我的每日头条</div>
+      <div style="font-size:13px;opacity:0.85;max-width:220px;line-height:1.5">把你关心的内容，汇聚到一个地方</div>
+    </div>
+    <div style="flex:1.2;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;padding:40px">
+      <div style="width:100%;max-width:320px">
+        <div style="font-size:18px;font-weight:600;margin-bottom:24px;color:#1a1a2e">欢迎回来</div>
+        <div style="height:40px;background:#f5f5f5;border-radius:8px;margin-bottom:16px;border:1px solid #e8e8e8"></div>
+        <div style="height:40px;background:#f5f5f5;border-radius:8px;margin-bottom:24px;border:1px solid #e8e8e8"></div>
+        <div style="height:40px;background:#1677ff;border-radius:8px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>设计要点</h3>
+  <ul>
+    <li><strong>布局：</strong>桌面端左右分屏（约 40% 品牌区 + 60% 表单区），移动端上下堆叠。</li>
+    <li><strong>品牌区：</strong>主色渐变或纯色背景、圆角 Logo 容器、应用名、一句话 slogan。</li>
+    <li><strong>表单区：</strong>纯白背景、左侧大标题"欢迎回来"、垂直输入框、主色登录按钮。</li>
+    <li><strong>动效：</strong>卡片轻微上浮入场（Framer Motion），输入框聚焦边框过渡，按钮悬停缩放。</li>
+    <li><strong>主题：</strong>登录页保持品牌色，不跟随暗色主题；后续进入应用后主题由设置控制。</li>
+    <li><strong>响应式：</strong>≤768px 时品牌区压缩为顶部横幅，表单区占满剩余空间。</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>技术方案</h3>
+  <ul>
+    <li>新增依赖：<code>framer-motion</code>（入场动效）</li>
+    <li>新增组件：<code>modules/auth/LoginPage.tsx</code> 重构，提取 <code>BrandPanel</code> 和 <code>LoginForm</code></li>
+    <li>样式：优先使用 Tailwind 风格工具类或 CSS Modules，减少 <code>styles.css</code> 全局污染</li>
+    <li>保留：现有 Ant Design Form/Input/Button，保持表单验证逻辑不变</li>
+  </ul>
+</div>
+
+<div class="pros-cons">
+  <div class="pros">
+    <h4>Pros</h4>
+    <ul>
+      <li>品牌感显著提升</li>
+      <li>结构清晰，易于响应式适配</li>
+      <li>与现有认证逻辑完全兼容</li>
+    </ul>
+  </div>
+  <div class="cons">
+    <h4>Cons</h4>
+    <ul>
+      <li>新增一个依赖</li>
+      <li>暗色主题用户首次看到亮色登录页可能略突兀</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <p class="subtitle">如果这份设计看起来没问题，我会把它写成正式设计文档，然后进入实现计划阶段。</p>
+</div>

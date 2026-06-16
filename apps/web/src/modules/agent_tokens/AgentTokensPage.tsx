@@ -205,7 +205,7 @@ export function AgentTokensPage({ session }: Props) {
   ];
 
   return (
-    <div style={{ padding: 24 }}>
+    <div className="agent-tokens-page">
       <Title level={3}>
         <KeyOutlined /> Agent Token
       </Title>

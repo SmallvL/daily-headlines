@@ -242,7 +242,7 @@ export function AgentPage({ session, onCreateSource }: Props) {
   // ── Render ──
 
   return (
-    <div style={{ padding: 24 }}>
+    <div className="agent-page">
       <Title level={3}>
         <RobotOutlined /> AI Agent 源
       </Title>

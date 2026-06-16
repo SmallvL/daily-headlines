@@ -1,0 +1,175 @@
+<h2>Dashboard 视觉优化预览</h2>
+<p class="subtitle">渐变背景 + 圆角卡片 + 精细工具栏 + 入场动效</p>
+
+<div class="mockup" style="margin-top: 20px; max-width: 900px;">
+  <div class="mockup-header">Dashboard 页面效果</div>
+  <div class="mockup-body" style="padding: 24px; background: linear-gradient(135deg, #f8f9fc 0%, #f0f2f8 100%);">
+
+    <!-- Toolbar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; background: white; padding: 12px 16px; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+      <!-- 搜索框 -->
+      <div style="flex: 1; max-width: 400px; padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc;">
+        <span style="color: #94a3b8;">🔍</span> <span style="color: #94a3b8; font-size: 13px;">搜索标题、摘要、来源或标签</span>
+      </div>
+      <!-- 视图切换 -->
+      <div style="display: flex; gap: 4px; background: #f1f5f9; padding: 3px; border-radius: 8px;">
+        <span style="padding: 4px 10px; border-radius: 6px; background: white; font-size: 12px; font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.06);">▦ 宫格</span>
+        <span style="padding: 4px 10px; border-radius: 6px; font-size: 12px; color: #64748b;">☰ 列表</span>
+        <span style="padding: 4px 10px; border-radius: 6px; font-size: 12px; color: #64748b;">≡ 紧凑</span>
+      </div>
+      <!-- 筛选按钮 -->
+      <span style="padding: 6px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; color: #475569;">⋯ 过滤</span>
+      <!-- 新增按钮 -->
+      <span style="padding: 6px 16px; background: #4f46e5; color: white; border-radius: 8px; font-size: 13px; font-weight: 500;">+ 新增信息源</span>
+    </div>
+
+    <!-- Feed Header with animation indicator -->
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">今日信息流</span>
+        <span style="font-size: 12px; color: #8b8fa3; background: #e8eaf0; padding: 2px 10px; border-radius: 12px;">共 42 条内容</span>
+      </div>
+      <span style="font-size: 11px; color: #a0a4b8; animation: pulse 2s infinite;">✨ 入场动画</span>
+    </div>
+
+    <!-- Grid Cards -->
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+      <!-- Card 1 -->
+      <div style="background: white; border-radius: 16px; overflow: hidden; border: 1px solid #e8ecf2; box-shadow: 0 4px 16px rgba(0,0,0,0.05); transition: all 0.3s; animation: fadeInUp 0.5s ease-out;">
+        <div style="width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #6366f1, #818cf8); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); font-size: 36px; font-weight: 800;">D</div>
+        <div style="padding: 12px 14px 8px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">DeepSeek 发布新一代开源模型，性能接近 GPT-4o</div>
+          <div style="font-size: 12px; color: #64748b; margin: 4px 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">新模型在多项基准测试中展现出接近 GPT-4o 的能力，引发开源社区广泛关注...</div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #94a3b8; margin: 6px 0 4px;">
+            <span style="color: #4f46e5; font-weight: 500;">36氪</span>
+            <span>🕐 2小时前</span>
+          </div>
+        </div>
+        <div style="padding: 2px 8px 8px; display: flex; justify-content: flex-end; gap: 2px;">
+          <span style="font-size: 11px; color: #94a3b8;">☆ ✓ 👁</span>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div style="background: white; border-radius: 16px; overflow: hidden; border: 1px solid #e8ecf2; box-shadow: 0 4px 16px rgba(0,0,0,0.05); transition: all 0.3s; animation: fadeInUp 0.5s ease-out 0.08s;">
+        <div style="width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #f59e0b, #fbbf24); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); font-size: 36px; font-weight: 800;">A</div>
+        <div style="padding: 12px 14px 8px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">AI 编程助手如何改变开发者工作流程？</div>
+          <div style="font-size: 12px; color: #64748b; margin: 4px 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">从代码补全到自动重构，AI 编程工具正在重塑软件开发的方式...</div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #94a3b8; margin: 6px 0 4px;">
+            <span style="color: #4f46e5; font-weight: 500;">InfoQ</span>
+            <span>🕐 3小时前</span>
+          </div>
+        </div>
+        <div style="padding: 2px 8px 8px; display: flex; justify-content: flex-end; gap: 2px;">
+          <span style="font-size: 11px; color: #94a3b8;">☆ ✓ 👁</span>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div style="background: white; border-radius: 16px; overflow: hidden; border: 1px solid #e8ecf2; box-shadow: 0 4px 16px rgba(0,0,0,0.05); transition: all 0.3s; animation: fadeInUp 0.5s ease-out 0.16s;">
+        <div style="width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #10b981, #34d399); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); font-size: 36px; font-weight: 800;">R</div>
+        <div style="padding: 12px 14px 8px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 4px;">Rust 2026 路线图发布：聚焦异步生态</div>
+          <div style="font-size: 12px; color: #64748b; margin: 4px 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">新路线图强调改善异步编程体验，计划推进协程特性的稳定化...</div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #94a3b8; margin: 6px 0 4px;">
+            <span style="color: #4f46e5; font-weight: 500;">OSChina</span>
+            <span>🕐 5小时前</span>
+          </div>
+        </div>
+        <div style="padding: 2px 8px 8px; display: flex; justify-content: flex-end; gap: 2px;">
+          <span style="font-size: 11px; color: #94a3b8;">☆ ✓ 👁</span>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div style="background: white; border-radius: 16px; overflow: hidden; border: 1px solid #e8ecf2; box-shadow: 0 4px 16px rgba(0,0,0,0.05); transition: all 0.3s; animation: fadeInUp 0.5s ease-out 0.24s;">
+        <div style="width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #ef4444, #f87171); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); font-size: 36px; font-weight: 800;">P</div>
+        <div style="padding: 12px 14px 8px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 4px;">Python 3.14 新特性预览：更快的运行时</div>
+          <div style="font-size: 12px; color: #64748b; margin: 4px 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">新版本带来 JIT 编译器的初步实现，预计可提升 10-15% 的执行性能...</div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #94a3b8; margin: 6px 0 4px;">
+            <span style="color: #4f46e5; font-weight: 500;">开源中国</span>
+            <span>🕐 8小时前</span>
+          </div>
+        </div>
+        <div style="padding: 2px 8px 8px; display: flex; justify-content: flex-end; gap: 2px;">
+          <span style="font-size: 11px; color: #94a3b8; opacity: 0.5;">☆ ✓ 👁</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- List View Preview -->
+    <div style="margin-top: 20px; display: flex; align-items: center; gap: 8px; font-size: 11px; color: #94a3b8; justify-content: center;">
+      <span style="display: flex; align-items: center; gap: 4px;">▦ 宫格</span>
+      <span style="color: #cbd5e1;">|</span>
+      <span style="display: flex; align-items: center; gap: 4px; color: #4f46e5; font-weight: 600;">☰ 列表</span>
+      <span style="color: #cbd5e1;">|</span>
+      <span style="display: flex; align-items: center; gap: 4px;">≡ 紧凑</span>
+    </div>
+
+    <!-- List Item -->
+    <div style="display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid #e8ecf2; animation: fadeInUp 0.4s ease-out 0.3s; margin-top: 4px;">
+      <div style="width: 80px; height: 60px; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #818cf8); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 20px; font-weight: 700;">D</div>
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-size: 14px; font-weight: 600; line-height: 1.5;">DeepSeek 发布新一代开源模型</div>
+        <div style="font-size: 11px; color: #94a3b8; display: flex; gap: 8px; margin-top: 4px;">
+          <span style="color: #4f46e5; font-weight: 500;">36氪</span>
+          <span>🕐 2小时前</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; font-size: 11px; color: #94a3b8;">☆ ✓ 👁</div>
+    </div>
+
+    <!-- Compact View Preview -->
+    <div style="display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e8ecf2; animation: fadeInUp 0.4s ease-out 0.4s; align-items: center;">
+      <div style="flex: 1; min-width: 0; font-size: 13px; font-weight: 500;">AI 编程助手如何改变开发者工作流程？</div>
+      <span style="font-size: 11px; color: #4f46e5; font-weight: 500; white-space: nowrap;">InfoQ</span>
+      <span style="font-size: 11px; color: #94a3b8; white-space: nowrap;">🕐 3小时前</span>
+      <span style="font-size: 11px; color: #94a3b8;">☆ ✓ 👁</span>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <h3>改动总结</h3>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>视觉变化</h4>
+      <ul>
+        <li>卡片圆角 10px → 16px，软阴影</li>
+        <li>Toolbar 圆角容器 + 细阴影</li>
+        <li>搜索框 border-radius: 10px</li>
+        <li>页面微渐变背景</li>
+        <li>列表/紧凑行统一圆角缩略图</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>动效</h4>
+      <ul>
+        <li>卡片入场 fadeInUp + stagger</li>
+        <li>列表行入场 fadeInUp</li>
+        <li>紧凑行入场 fadeInUp</li>
+        <li>卡片 hover 微上浮 + 阴影加深</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+</style>

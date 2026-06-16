@@ -1,0 +1,122 @@
+<h2>Dashboard — B站风格卡片参考</h2>
+<p class="subtitle">圆角 12px · 封面图叠加信息 · 更紧凑的信息布局</p>
+
+<div class="mockup" style="margin-top: 20px; max-width: 900px;">
+  <div class="mockup-header">Dashboard 页面效果（B站风格参考）</div>
+  <div class="mockup-body" style="padding: 24px; background: linear-gradient(135deg, #f8f9fc 0%, #f0f2f8 100%);">
+
+    <!-- Grid Cards — B站风格 -->
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+      <!-- Card 1 -->
+      <div style="background: white; border-radius: 12px; overflow: hidden; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.25s; animation: fadeInUp 0.5s ease-out;">
+        <!-- Cover with overlay -->
+        <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #6366f1, #818cf8);">
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); font-size: 36px; font-weight: 800;">D</div>
+          <!-- Source badge (like B站 up主 tag) -->
+          <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.55); color: white; font-size: 11px; padding: 2px 8px; border-radius: 4px; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">36氪</div>
+          <!-- Time badge -->
+          <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.55); color: white; font-size: 11px; padding: 2px 8px; border-radius: 4px;">2小时前</div>
+        </div>
+        <!-- Info section -->
+        <div style="padding: 10px 12px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">DeepSeek 发布新一代开源模型，性能接近 GPT-4o</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px;">
+            <div style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: #99a2b3;">
+              <span>36氪</span>
+            </div>
+            <div style="display: flex; gap: 2px; font-size: 12px; color: #c0c6d2;">
+              <span>☆</span><span>✓</span><span>👁</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div style="background: white; border-radius: 12px; overflow: hidden; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.25s; animation: fadeInUp 0.5s ease-out 0.08s;">
+        <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); font-size: 36px; font-weight: 800;">A</div>
+          <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.55); color: white; font-size: 11px; padding: 2px 8px; border-radius: 4px;">InfoQ</div>
+          <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.55); color: white; font-size: 11px; padding: 2px 8px; border-radius: 4px;">3小时前</div>
+        </div>
+        <div style="padding: 10px 12px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">AI 编程助手如何改变开发者工作流程？</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px;">
+            <span style="font-size: 12px; color: #99a2b3;">InfoQ</span>
+            <span style="font-size: 12px; color: #c0c6d2;">☆ ✓ 👁</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 — with real image scenario -->
+      <div style="background: white; border-radius: 12px; overflow: hidden; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.25s; animation: fadeInUp 0.5s ease-out 0.16s;">
+        <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #10b981, #34d399);">
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); font-size: 36px; font-weight: 800;">R</div>
+          <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.55); color: white; font-size: 11px; padding: 2px 8px; border-radius: 4px;">OSChina</div>
+          <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.55); color: white; font-size: 11px; padding: 2px 8px; border-radius: 4px;">5小时前</div>
+        </div>
+        <div style="padding: 10px 12px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 4px;">Rust 2026 路线图发布：聚焦异步生态</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px;">
+            <span style="font-size: 12px; color: #99a2b3;">OSChina</span>
+            <span style="font-size: 12px; color: #c0c6d2;">☆ ✓ 👁</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 — read state -->
+      <div style="background: white; border-radius: 12px; overflow: hidden; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.25s; animation: fadeInUp 0.5s ease-out 0.24s; opacity: 0.5;">
+        <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #ef4444, #f87171);">
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); font-size: 36px; font-weight: 800;">P</div>
+          <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.55); color: white; font-size: 11px; padding: 2px 8px; border-radius: 4px;">开源中国</div>
+          <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.55); color: white; font-size: 11px; padding: 2px 8px; border-radius: 4px;">8小时前</div>
+        </div>
+        <div style="padding: 10px 12px;">
+          <div style="font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 4px;">Python 3.14 新特性预览：更快的运行时</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px;">
+            <span style="font-size: 12px; color: #99a2b3;">开源中国</span>
+            <span style="font-size: 12px; color: #c0c6d2; opacity: 0.5;">☆ ✓ 👁</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div style="margin-top: 24px; background: white; border-radius: 12px; padding: 16px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+      <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+          <h4 style="margin: 0 0 8px; font-size: 14px; color: #10b981;">✓ 保留现有优点</h4>
+          <ul style="margin: 0; padding-left: 16px; font-size: 13px; color: #475569; line-height: 1.8;">
+            <li>三视图模式（grid/list/compact）</li>
+            <li>封面图 + 封面渐变占位</li>
+            <li>来源/时间/作者 meta</li>
+            <li>收藏/已读/隐藏操作</li>
+          </ul>
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <h4 style="margin: 0 0 8px; font-size: 14px; color: #6366f1;">新变化</h4>
+          <ul style="margin: 0; padding-left: 16px; font-size: 13px; color: #475569; line-height: 1.8;">
+            <li>卡片圆角 10px → <strong>12px</strong>（B站风格）</li>
+            <li>去掉硬边框，换软阴影</li>
+            <li>来源和时间的 badge 移入封面叠加层</li>
+            <li>卡片信息区更紧凑，去掉摘要行</li>
+            <li>framer-motion fadeInUp + stagger</li>
+            <li>页面微渐变背景</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Note about other views -->
+    <div style="margin-top: 16px; padding: 16px; background: #EEF2FF; border-radius: 10px; font-size: 13px; color: #4338CA; text-align: center;">
+      <strong>注意：</strong> 列表和紧凑视图保持现有样式不变，仅微调缩略图圆角和间距
+    </div>
+
+  </div>
+</div>
+
+<style>
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>

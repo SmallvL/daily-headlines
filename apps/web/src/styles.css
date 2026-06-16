@@ -45,6 +45,17 @@ html[data-theme="dark"] {
   .source-list-section {
     background: none;
   }
+  .fetch-logs-page,
+  .settings-page,
+  .agent-page,
+  .agent-tokens-page,
+  .users-page,
+  .groups-page,
+  .templates-page,
+  .audit-logs-page,
+  .data-mgmt-page {
+    background: none;
+  }
 }
 
 body {
@@ -1145,6 +1156,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  background: linear-gradient(135deg, #f8f9fc 0%, #f0f2f8 100%);
+  padding: 20px;
+  border-radius: 12px;
 }
 
 /* ── Settings Page ── */
@@ -1152,6 +1166,43 @@ body {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  background: linear-gradient(135deg, #f8f9fc 0%, #f0f2f8 100%);
+  padding: 24px;
+  border-radius: 12px;
+}
+
+/* ── Agent Page ── */
+.agent-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: linear-gradient(135deg, #f8f9fc 0%, #f0f2f8 100%);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* ── Agent Tokens Page ── */
+.agent-tokens-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: linear-gradient(135deg, #f8f9fc 0%, #f0f2f8 100%);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* ── Admin Pages ── */
+.users-page,
+.groups-page,
+.templates-page,
+.audit-logs-page,
+.data-mgmt-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: linear-gradient(135deg, #f8f9fc 0%, #f0f2f8 100%);
+  padding: 20px;
+  border-radius: 12px;
 }
 
 /* ── Responsive ── */

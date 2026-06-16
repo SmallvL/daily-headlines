@@ -1,0 +1,37 @@
+<h2>整体导航与布局：偏好哪种结构？</h2>
+<p class="subtitle">当前是侧边栏 + 顶部 Header 的组合。选一个你更喜欢的导航结构。</p>
+
+<div class="options">
+  <div class="option" data-choice="sider-clean" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>精简侧边栏</h3>
+      <p>保留侧边栏，但去掉多余分割线、统一图标风格、增加选中高亮和悬停动效。改动最小，风险低。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="top-nav" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>顶部导航</h3>
+      <p>去掉侧边栏，改用顶部水平导航 + 用户头像下拉。内容区更宽，适合宽屏阅读信息流。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="hybrid" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>混合式</h3>
+      <p>左侧保留窄图标栏（仅图标），顶部放面包屑/页面标题/操作区。兼顾导航效率与内容空间。</p>
+    </div>
+  </div>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">当前 AppShell 结构</div>
+  <div class="mockup-body" style="display:flex;min-height:160px">
+    <div class="mock-sidebar" style="width:180px">Logo + 菜单</div>
+    <div style="flex:1;padding:16px">
+      <div class="mock-nav" style="margin-bottom:16px">页面标题 | 主题切换 | 退出</div>
+      <div class="mock-content">内容区域</div>
+    </div>
+  </div>
+</div>

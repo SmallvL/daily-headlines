@@ -1,0 +1,71 @@
+<h2>登录页方案：极简专业方向</h2>
+<p class="subtitle">3 种不同侧重点的极简实现。选择一个，或告诉我想要哪几个元素的组合。</p>
+
+<div class="cards">
+  <div class="card" data-choice="centered-card" onclick="toggleSelect(this)">
+    <div class="mockup">
+      <div class="mockup-header">方案 A：悬浮居中卡片</div>
+      <div class="mockup-body" style="display:flex;align-items:center;justify-content:center;min-height:180px;background:linear-gradient(135deg,#f5f7fa 0%,#e4e7f1 100%)">
+        <div style="width:240px;padding:28px;border-radius:16px;background:rgba(255,255,255,0.95);box-shadow:0 10px 40px rgba(0,0,0,0.08);text-align:center">
+          <div style="width:40px;height:40px;border-radius:10px;background:#1677ff;margin:0 auto 12px"></div>
+          <div style="font-weight:700;font-size:16px;margin-bottom:4px">我的每日头条</div>
+          <div style="font-size:11px;color:#888;margin-bottom:16px">汇聚你关心的内容</div>
+          <div style="height:28px;background:#f5f5f5;border-radius:6px;margin-bottom:8px"></div>
+          <div style="height:28px;background:#f5f5f5;border-radius:6px;margin-bottom:12px"></div>
+          <div style="height:32px;background:#1677ff;border-radius:6px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>方案 A：悬浮居中卡片</h3>
+      <p>保留居中布局，但卡片更有质感：大圆角、柔和阴影、品牌色块 Logo、副标题。背景用浅灰渐变增加层次。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="split-minimal" onclick="toggleSelect(this)">
+    <div class="mockup">
+      <div class="mockup-header">方案 B：左右分屏（极简）</div>
+      <div class="mockup-body" style="display:flex;min-height:180px">
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#1677ff;color:#fff;padding:20px">
+          <div style="font-size:24px;font-weight:700">📰</div>
+          <div style="font-weight:700;margin-top:8px">我的每日头条</div>
+          <div style="font-size:10px;opacity:0.8;margin-top:4px">个人信息源聚合平台</div>
+        </div>
+        <div style="flex:1.2;display:flex;align-items:center;justify-content:center;background:#fff;padding:20px">
+          <div style="width:180px">
+            <div style="height:28px;background:#f5f5f5;border-radius:6px;margin-bottom:8px"></div>
+            <div style="height:28px;background:#f5f5f5;border-radius:6px;margin-bottom:12px"></div>
+            <div style="height:32px;background:#1677ff;border-radius:6px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>方案 B：左右分屏（极简）</h3>
+      <p>左侧小面积品牌区（纯色 + Logo +  slogan），右侧纯白表单。比方案 A 更有品牌感，但仍保持简洁。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="full-bleed" onclick="toggleSelect(this)">
+    <div class="mockup">
+      <div class="mockup-header">方案 C：全幅品牌背景</div>
+      <div class="mockup-body" style="display:flex;align-items:center;justify-content:center;min-height:180px;background:linear-gradient(160deg,#1677ff 0%,#36cfc9 100%)">
+        <div style="width:240px;padding:28px;border-radius:16px;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,0.15);text-align:center">
+          <div style="font-weight:700;font-size:16px;margin-bottom:4px">我的每日头条</div>
+          <div style="font-size:11px;color:#888;margin-bottom:16px">汇聚你关心的内容</div>
+          <div style="height:28px;background:#f5f5f5;border-radius:6px;margin-bottom:8px"></div>
+          <div style="height:28px;background:#f5f5f5;border-radius:6px;margin-bottom:12px"></div>
+          <div style="height:32px;background:#1677ff;border-radius:6px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>方案 C：全幅品牌背景</h3>
+      <p>大面积品牌渐变背景 + 居中白色卡片。视觉冲击力最强，但色彩较重，和后续极简导航形成对比。</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <p class="subtitle">我的推荐：<strong>方案 A</strong>。它在不改布局结构的前提下提升质感，与后续混合式导航的简洁风格最协调，也最容易和现有代码集成。</p>
+</div>

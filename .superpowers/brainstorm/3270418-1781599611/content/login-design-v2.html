@@ -1,0 +1,61 @@
+<h2>登录页最终设计（方案 A）</h2>
+<p class="subtitle">悬浮居中卡片 · 极简专业</p>
+
+<div class="mockup">
+  <div class="mockup-header">桌面端预览</div>
+  <div class="mockup-body" style="display:flex;align-items:center;justify-content:center;min-height:300px;background:linear-gradient(135deg,#f5f7fa 0%,#e4e7f1 100%)">
+    <div style="width:360px;padding:40px 32px;border-radius:20px;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,0.08);text-align:center">
+      <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#1677ff 0%,#36cfc9 100%);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px">📰</div>
+      <div style="font-size:20px;font-weight:700;letter-spacing:-0.01em;margin-bottom:4px;color:#1a1a2e">我的每日头条</div>
+      <div style="font-size:13px;color:#888;margin-bottom:28px">汇聚你关心的内容</div>
+      <div style="height:42px;background:#f8f9fa;border-radius:10px;margin-bottom:14px;border:1px solid #e8e8e8"></div>
+      <div style="height:42px;background:#f8f9fa;border-radius:10px;margin-bottom:22px;border:1px solid #e8e8e8"></div>
+      <div style="height:44px;background:#1677ff;border-radius:10px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>设计要点</h3>
+  <ul>
+    <li><strong>布局：</strong>卡片水平垂直居中，四周留白。结构改动最小，与现有 LoginPage 兼容。</li>
+    <li><strong>卡片：</strong>大圆角（20px）、柔和弥散阴影、纯白背景，营造悬浮感。</li>
+    <li><strong>品牌：</strong>渐变圆角 Logo 图标 + 应用名 + 一句话 slogan，强化品牌记忆。</li>
+    <li><strong>表单：</strong>左侧对齐的输入框，圆角输入框，主色登录按钮，错误提示在卡片内顶部。</li>
+    <li><strong>动效：</strong>卡片轻微上浮入场（Framer Motion），输入框聚焦时边框颜色过渡，按钮悬停微缩放。</li>
+    <li><strong>主题：</strong>登录页背景使用浅灰渐变，不跟随暗色主题；进入应用后由设置控制主题。</li>
+    <li><strong>响应式：</strong>移动端卡片宽度自适应（min-width + 最大宽度），内边距适当缩小。</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>技术方案</h3>
+  <ul>
+    <li>新增依赖：<code>framer-motion</code>（入场动效）</li>
+    <li>重构文件：<code>modules/auth/LoginPage.tsx</code></li>
+    <li>样式策略：登录页专用样式集中在组件内（styled/inline），不污染全局 <code>styles.css</code></li>
+    <li>保留：Ant Design Form/Input/Button 与现有登录 API 逻辑</li>
+  </ul>
+</div>
+
+<div class="pros-cons">
+  <div class="pros">
+    <h4>Pros</h4>
+    <ul>
+      <li>改动最小，与现有路由/状态完美兼容</li>
+      <li>与后续混合式导航的简洁风格协调</li>
+      <li>实现快速，风险低</li>
+    </ul>
+  </div>
+  <div class="cons">
+    <h4>Cons</h4>
+    <ul>
+      <li>品牌展示面积比分屏方案小</li>
+      <li>大面积留白在超大屏上可能显得空旷</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <p class="subtitle">确认这套方案后，我会写入正式设计文档，再生成实现计划。</p>
+</div>

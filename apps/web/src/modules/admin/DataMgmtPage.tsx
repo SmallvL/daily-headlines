@@ -152,7 +152,7 @@ export default function DataMgmtPage({ session }: Props) {
   const maxRecords = Math.max(...growthTables.map((t) => t.record_count), 1);
 
   return (
-    <div style={{ maxWidth: 960, margin: "0 auto" }}>
+    <div className="data-mgmt-page">
       {contextHolder}
 
       <Typography.Title level={4} style={{ marginBottom: 24 }}>

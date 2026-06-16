@@ -149,7 +149,7 @@ export function UsersPage({ session }: UsersPageProps) {
   ];
 
   return (
-    <div>
+    <div className="users-page">
       {contextHolder}
       <Typography.Title level={4}>用户管理</Typography.Title>
       <Space style={{ marginBottom: 16 }}>

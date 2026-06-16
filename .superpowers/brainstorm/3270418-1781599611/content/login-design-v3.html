@@ -1,0 +1,68 @@
+<h2>登录页最终设计（方案 A + 可配置背景）</h2>
+<p class="subtitle">悬浮居中卡片 · 极简专业 · 支持设置页更换登录背景</p>
+
+<div class="mockup">
+  <div class="mockup-header">桌面端预览 · 默认背景</div>
+  <div class="mockup-body" style="display:flex;align-items:center;justify-content:center;min-height:300px;background:linear-gradient(135deg,#f5f7fa 0%,#e4e7f1 100%)">
+    <div style="width:360px;padding:40px 32px;border-radius:20px;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,0.08);text-align:center">
+      <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#1677ff 0%,#36cfc9 100%);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px">📰</div>
+      <div style="font-size:20px;font-weight:700;letter-spacing:-0.01em;margin-bottom:4px;color:#1a1a2e">我的每日头条</div>
+      <div style="font-size:13px;color:#888;margin-bottom:28px">汇聚你关心的内容</div>
+      <div style="height:42px;background:#f8f9fa;border-radius:10px;margin-bottom:14px;border:1px solid #e8e8e8"></div>
+      <div style="height:42px;background:#f8f9fa;border-radius:10px;margin-bottom:22px;border:1px solid #e8e8e8"></div>
+      <div style="height:44px;background:#1677ff;border-radius:10px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">桌面端预览 · 自定义背景图</div>
+  <div class="mockup-body" style="display:flex;align-items:center;justify-content:center;min-height:300px;background:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect fill=%22%23e0e7ff%22 width=%22400%22 height=%22300%22/><circle cx=%2250%22 cy=%2250%22 r=%2280%22 fill=%22%23bfdbfe%22 opacity=%220.6%22/><circle cx=%22350%22 cy=%22250%22 r=%22100%22 fill=%22%23ddd6fe%22 opacity=%220.5%22/></svg>') center/cover">
+    <div style="width:360px;padding:40px 32px;border-radius:20px;background:rgba(255,255,255,0.96);box-shadow:0 20px 60px rgba(0,0,0,0.12);text-align:center;backdrop-filter:blur(8px)">
+      <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#1677ff 0%,#36cfc9 100%);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px">📰</div>
+      <div style="font-size:20px;font-weight:700;letter-spacing:-0.01em;margin-bottom:4px;color:#1a1a2e">我的每日头条</div>
+      <div style="font-size:13px;color:#888;margin-bottom:28px">汇聚你关心的内容</div>
+      <div style="height:42px;background:#f8f9fa;border-radius:10px;margin-bottom:14px;border:1px solid #e8e8e8"></div>
+      <div style="height:42px;background:#f8f9fa;border-radius:10px;margin-bottom:22px;border:1px solid #e8e8e8"></div>
+      <div style="height:44px;background:#1677ff;border-radius:10px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>设计要点</h3>
+  <ul>
+    <li><strong>布局：</strong>卡片水平垂直居中，四周留白。结构改动最小。</li>
+    <li><strong>卡片：</strong>大圆角（20px）、柔和阴影、纯白背景；自定义背景时卡片带轻微透明 + 毛玻璃效果。</li>
+    <li><strong>品牌：</strong>渐变圆角 Logo 图标 + 应用名 + slogan。</li>
+    <li><strong>表单：</strong>圆角输入框，主色登录按钮，错误提示置顶。</li>
+    <li><strong>动效：</strong>Framer Motion 卡片入场、聚焦过渡、按钮悬停微缩放。</li>
+    <li><strong>默认背景：</strong>浅灰渐变（不跟随暗色主题）。</li>
+    <li><strong>自定义背景：</strong>支持上传图片，登录页用 <code>background-image: url(...)</code> 覆盖，卡片透明度自适应。</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>新增配置项</h3>
+  <ul>
+    <li><strong>设置页新增：</strong>"登录页背景" 设置卡片</li>
+    <li>选项：使用默认 / 上传自定义图片 / 清除自定义图片</li>
+    <li>后端：扩展 <code>preferences</code> 模块，支持保存 <code>login_background_url</code></li>
+    <li>存储：图片上传复用现有图片代理/静态文件机制，或新增上传接口</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>技术方案</h3>
+  <ul>
+    <li>新增依赖：<code>framer-motion</code></li>
+    <li>前端：<code>LoginPage.tsx</code> 读取 <code>login_background_url</code> 偏好，动态切换背景</li>
+    <li>前端：<code>SettingsPage.tsx</code> 新增背景图上传/清除 UI</li>
+    <li>后端：扩展 <code>preferences</code> API 与数据库字段</li>
+    <li>样式：登录页专用样式集中在组件内</li>
+  </ul>
+</div>
+
+<div class="section">
+  <p class="subtitle">确认后我会写入正式设计文档，再生成实现计划。</p>
+</div>

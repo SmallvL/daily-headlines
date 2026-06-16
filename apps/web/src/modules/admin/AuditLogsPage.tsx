@@ -115,7 +115,7 @@ export function AuditLogsPage({ session }: AuditLogsPageProps) {
   ];
 
   return (
-    <div>
+    <div className="audit-logs-page">
       <Typography.Title level={4}>审计日志</Typography.Title>
       <Space style={{ marginBottom: 16 }} wrap>
         <Select

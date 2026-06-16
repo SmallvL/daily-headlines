@@ -117,7 +117,7 @@ export function GroupsPage({ session }: GroupsPageProps) {
   );
 
   return (
-    <div>
+    <div className="groups-page">
       {contextHolder}
       <Typography.Title level={4}>组管理</Typography.Title>
       <Space style={{ marginBottom: 16 }}>

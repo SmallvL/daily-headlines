@@ -106,7 +106,7 @@ export function TemplatesPage({ session }: TemplatesPageProps) {
   }
 
   return (
-    <div>
+    <div className="templates-page">
       {contextHolder}
       <Typography.Title level={4}>公共信息源模板</Typography.Title>
       <Space style={{ marginBottom: 16 }}>
