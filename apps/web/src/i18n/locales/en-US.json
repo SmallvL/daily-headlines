@@ -216,6 +216,9 @@
       "operator": "Operator",
       "time": "Time",
       "details": "Details"
+    },
+    "dataMgmt": {
+      "title": "Data Management"
     }
   },
   "errors": {

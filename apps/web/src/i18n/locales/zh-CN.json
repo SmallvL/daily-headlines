@@ -216,6 +216,9 @@
       "operator": "操作人",
       "time": "时间",
       "details": "详情"
+    },
+    "dataMgmt": {
+      "title": "数据管理"
     }
   },
   "errors": {
