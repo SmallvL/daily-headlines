@@ -45,3 +45,6 @@ uploads/
 
 # Token calculator (separate tool)
 token-cost-calculator.html
+
+# Worktrees
+.worktrees/
