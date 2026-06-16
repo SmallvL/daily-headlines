@@ -32,6 +32,9 @@ class UserPreferenceUpdate(BaseModel):
         v = v.strip()
         if any(ord(ch) < 32 for ch in v):
             raise ValueError("URL must not contain control characters")
+        # Allow relative paths (e.g., /uploads/xxx.jpg) and absolute URLs
+        if v.startswith("/"):
+            return v
         parsed = urlparse(v)
         if parsed.scheme not in {"http", "https"} or not parsed.netloc:
             raise ValueError("Invalid URL")
