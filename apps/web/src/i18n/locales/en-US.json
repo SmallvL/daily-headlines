@@ -98,8 +98,6 @@
     "schedule": "Schedule",
     "create": "Create Source",
     "fetchLogs": "Fetch Logs",
-    "deleteConfirm": "Confirm Delete",
-    "deleteMessage": "Are you sure you want to delete this source?",
     "empty": "No sources yet",
     "preview": "Preview",
     "templateExport": "Export Template",

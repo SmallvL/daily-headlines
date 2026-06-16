@@ -98,8 +98,6 @@
     "schedule": "定时设置",
     "create": "新建信息源",
     "fetchLogs": "抓取日志",
-    "deleteConfirm": "确认删除",
-    "deleteMessage": "确定要删除该信息源吗？",
     "empty": "暂无信息源",
     "preview": "预览",
     "templateExport": "导出模板",
