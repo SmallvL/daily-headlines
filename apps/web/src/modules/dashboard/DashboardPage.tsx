@@ -16,6 +16,7 @@ import {
   Tooltip,
 } from "antd";
 import { useCallback, useState } from "react";
+import { motion } from "framer-motion";
 
 import { AuthSession } from "../../shared/api/auth";
 import { proxiedImageUrl } from "../../shared/utils/imageProxy";
@@ -116,6 +117,22 @@ const PersonIcon = () => (
 /* ───────── Helpers ───────── */
 
 type ViewMode = "grid" | "list" | "compact";
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: "easeOut" as const, delay: i * 0.04 },
+  }),
+};
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.06 },
+  },
+};
 
 /* ───────── Component ───────── */
 
@@ -608,11 +625,40 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
 
         {/* Grid view needs special container */}
         {viewMode === "grid" && !feedQuery.isLoading && items.length > 0 ? (
-          <div className="dashboard-feed-grid">{items.map(renderGridCard)}</div>
+          <motion.div
+            className="dashboard-feed-grid"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {items.map((item, i) => (
+              <motion.div
+                key={item.id}
+                variants={cardVariants}
+                custom={i}
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                {renderGridCard(item)}
+              </motion.div>
+            ))}
+          </motion.div>
         ) : viewMode === "list" && !feedQuery.isLoading && items.length > 0 ? (
-          <div className="dashboard-feed-list">{items.map(renderListItem)}</div>
+          <motion.div className="dashboard-feed-list" initial="hidden" animate="visible">
+            {items.map((item, i) => (
+              <motion.div key={item.id} variants={cardVariants} custom={i}>
+                {renderListItem(item)}
+              </motion.div>
+            ))}
+          </motion.div>
         ) : viewMode === "compact" && !feedQuery.isLoading && items.length > 0 ? (
-          <div className="dashboard-feed-compact">{items.map(renderCompactRow)}</div>
+          <motion.div className="dashboard-feed-compact" initial="hidden" animate="visible">
+            {items.map((item, i) => (
+              <motion.div key={item.id} variants={cardVariants} custom={i}>
+                {renderCompactRow(item)}
+              </motion.div>
+            ))}
+          </motion.div>
         ) : feedQuery.isLoading ? (
           <div className="loading-container">
             <Spin size="large" />
