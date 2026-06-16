@@ -12,6 +12,7 @@ export type UserPreference = {
   language: Language;
   theme: Theme;
   default_view: DefaultView;
+  login_background_url: string | null;
   updated_at: string | null;
 };
 
@@ -19,6 +20,7 @@ export type UserPreferenceUpdate = {
   language?: Language;
   theme?: Theme;
   default_view?: DefaultView;
+  login_background_url?: string | null;
 };
 
 // ── API ──
@@ -40,4 +42,8 @@ export async function updatePreference(
     token: session.accessToken,
     body: JSON.stringify(data),
   });
+}
+
+export async function getLoginBackground(): Promise<string | null> {
+  return apiRequest<string | null>("/api/preferences/login-background");
 }
