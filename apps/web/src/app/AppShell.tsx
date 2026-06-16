@@ -51,6 +51,20 @@ const keyToPath: Record<string, string> = {
   "data-mgmt": "/admin/data-mgmt",
 };
 
+const routeMeta: Record<string, { i18nKey: string }> = {
+  "/feed":             { i18nKey: "feed.title" },
+  "/sources":          { i18nKey: "sources.title" },
+  "/fetch-logs":       { i18nKey: "taskLogs.title" },
+  "/agent":            { i18nKey: "agent.title" },
+  "/agent-tokens":     { i18nKey: "agent.title" },
+  "/settings":         { i18nKey: "settings.title" },
+  "/admin/users":      { i18nKey: "admin.users.title" },
+  "/admin/groups":     { i18nKey: "admin.groups.title" },
+  "/admin/templates":  { i18nKey: "admin.templates.title" },
+  "/admin/audit":      { i18nKey: "admin.audit.title" },
+  "/admin/data-mgmt":  { i18nKey: "admin.dataMgmt.title" },
+};
+
 type AppShellProps = {
   session: AuthSession | null;
   isDarkMode: boolean;
@@ -72,6 +86,12 @@ export function AppShell({
   const siderTheme = isDarkMode ? "dark" : "light";
 
   const selectedKey = pathToKey[location.pathname] || "dashboard";
+
+  const currentPath = location.pathname;
+  const currentMeta = Object.entries(routeMeta).find(([path]) =>
+    currentPath.startsWith(path)
+  );
+  const pageTitle = currentMeta ? t(currentMeta[1].i18nKey) : t("common.appName");
 
   const menuItems = [
     { key: "dashboard", icon: <DashboardOutlined />, label: t("nav.feed") },
@@ -123,8 +143,8 @@ export function AppShell({
       </Sider>
       <Layout>
         <Header className="app-header">
-          <Typography.Title level={4} className="page-title">
-            {t("feed.title")}
+          <Typography.Title level={4} style={{ margin: 0 }}>
+            {pageTitle}
           </Typography.Title>
           <Space>
             <Switch
