@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.modules.auth.router import CurrentUserDep
+from app.modules.auth.schemas import CurrentUser
 from app.modules.preferences import service as pref_service
 from app.modules.preferences.schemas import UserPreferenceRead, UserPreferenceUpdate
 from app.modules.users.models import User
@@ -41,10 +42,16 @@ def get_login_background(db: DbDep):
     """Public endpoint: get login page background URL from admin preference."""
     admin = (
         db.query(User)
-        .filter(User.role == "admin", User.status == "active")
+        .filter(User.role == "admin")
         .first()
     )
     if not admin:
         return ApiResponse(data=None)
-    pref = pref_service.get_or_create_preference(db, admin)
+    admin_user = CurrentUser(
+        id=admin.id,
+        username=admin.username,
+        display_name=admin.display_name,
+        roles=[admin.role],
+    )
+    pref = pref_service.get_or_create_preference(db, admin_user)
     return ApiResponse(data=pref.login_background_url)
