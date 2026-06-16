@@ -3,7 +3,7 @@ import { ConfigProvider, theme } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import enUS from "antd/locale/en_US";
 import { useMemo, useState } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { AppShell } from "./AppShell";
@@ -24,8 +24,18 @@ import { UserPreference } from "../shared/api/preferences";
 
 const queryClient = new QueryClient();
 
+function ProtectedRoute({ session }: { session: AuthSession | null }) {
+  if (!session) return <Navigate to="/login" replace />;
+  return <Outlet />;
+}
+
+function NotFound() {
+  return <div style={{ padding: 48, textAlign: "center" }}>404 — Page Not Found</div>;
+}
+
 export function App() {
   const { i18n } = useTranslation();
+  const navigate = useNavigate();
   const [session, setSession] = useState<AuthSession | null>(() => {
     const token = localStorage.getItem("access_token");
     return token ? { accessToken: token } : null;
@@ -38,7 +48,6 @@ export function App() {
     }
     return false;
   });
-  const [activePage, setActivePage] = useState("dashboard");
   const [antdLocale, setAntdLocale] = useState(i18n.language === "en-US" ? enUS : zhCN);
 
   const themeConfig = useMemo(
@@ -55,12 +64,12 @@ export function App() {
   function handleLogin(nextSession: AuthSession) {
     localStorage.setItem("access_token", nextSession.accessToken);
     setSession(nextSession);
+    navigate("/feed");
   }
 
   function handleLogout() {
     localStorage.removeItem("access_token");
     setSession(null);
-    setActivePage("dashboard");
   }
 
   function handlePreferenceChange(pref: UserPreference) {
@@ -80,73 +89,36 @@ export function App() {
     setAntdLocale(pref.language === "en-US" ? enUS : zhCN);
   }
 
-  // Dev admin always has admin role; real RBAC can be added later
   const isAdmin = !!session;
-
-  const content =
-    activePage === "sources" && session ? (
-      <SourcesPage session={session} />
-    ) : activePage === "fetch-logs" && session ? (
-      <FetchLogsPage session={session} />
-    ) : activePage === "admin-users" && session ? (
-      <UsersPage session={session} />
-    ) : activePage === "admin-groups" && session ? (
-      <GroupsPage session={session} />
-    ) : activePage === "admin-templates" && session ? (
-      <TemplatesPage session={session} />
-    ) : activePage === "admin-audit" && session ? (
-      <AuditLogsPage session={session} />
-    ) : activePage === "data-mgmt" && session ? (
-      <DataMgmtPage session={session} />
-    ) : activePage === "agent" && session ? (
-      <AgentPage session={session} onCreateSource={() => setActivePage("sources")} />
-    ) : activePage === "agent-tokens" && session ? (
-      <AgentTokensPage session={session} />
-    ) : activePage === "settings" && session ? (
-      <SettingsPage session={session} onPreferenceChange={handlePreferenceChange} />
-    ) : session ? (
-      <DashboardPage
-        session={session}
-        onCreateSource={() => setActivePage("sources")}
-      />
-    ) : null;
 
   return (
     <QueryClientProvider client={queryClient}>
       <ConfigProvider locale={antdLocale} theme={themeConfig}>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/login"
-              element={
-                session ? (
-                  <Navigate to="/" replace />
-                ) : (
-                  <LoginPage onLogin={handleLogin} />
-                )
-              }
-            />
-            <Route
-              path="/*"
-              element={
-                session ? (
-                  <AppShell
-                    activePage={activePage}
-                    isDarkMode={isDarkMode}
-                    isAdmin={isAdmin}
-                    onPageChange={setActivePage}
-                    onThemeChange={setIsDarkMode}
-                    onLogout={handleLogout}
-                  >
-                    {content}
-                  </AppShell>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
-          </Routes>
-        </BrowserRouter>
+        <Routes>
+          <Route
+            path="/login"
+            element={
+              session ? <Navigate to="/feed" replace /> : <LoginPage onLogin={handleLogin} />
+            }
+          />
+          <Route element={<ProtectedRoute session={session} />}>
+            <Route element={<AppShell session={session} isDarkMode={isDarkMode} isAdmin={isAdmin} onThemeChange={setIsDarkMode} onLogout={handleLogout} />}>
+              <Route path="/feed" element={<DashboardPage session={session!} onCreateSource={() => navigate("/sources")} />} />
+              <Route path="/sources" element={<SourcesPage session={session!} />} />
+              <Route path="/fetch-logs" element={<FetchLogsPage session={session!} />} />
+              <Route path="/agent" element={<AgentPage session={session!} onCreateSource={() => navigate("/sources")} />} />
+              <Route path="/agent-tokens" element={<AgentTokensPage session={session!} />} />
+              <Route path="/settings" element={<SettingsPage session={session!} onPreferenceChange={handlePreferenceChange} />} />
+              <Route path="/admin/users" element={<UsersPage session={session!} />} />
+              <Route path="/admin/groups" element={<GroupsPage session={session!} />} />
+              <Route path="/admin/templates" element={<TemplatesPage session={session!} />} />
+              <Route path="/admin/audit" element={<AuditLogsPage session={session!} />} />
+              <Route path="/admin/data-mgmt" element={<DataMgmtPage session={session!} />} />
+              <Route index element={<Navigate to="/feed" replace />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Route>
+        </Routes>
       </ConfigProvider>
     </QueryClientProvider>
   );

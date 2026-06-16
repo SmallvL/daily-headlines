@@ -15,35 +15,63 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, Space, Switch, Typography, theme } from "antd";
-import { ReactNode } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { AppLogo } from "../shared/components/AppLogo";
+import { AuthSession } from "../shared/api/auth";
 
 const { Header, Sider, Content } = Layout;
 
+const pathToKey: Record<string, string> = {
+  "/feed": "dashboard",
+  "/sources": "sources",
+  "/fetch-logs": "fetch-logs",
+  "/agent": "agent",
+  "/agent-tokens": "agent-tokens",
+  "/settings": "settings",
+  "/admin/users": "admin-users",
+  "/admin/groups": "admin-groups",
+  "/admin/templates": "admin-templates",
+  "/admin/audit": "admin-audit",
+  "/admin/data-mgmt": "data-mgmt",
+};
+
+const keyToPath: Record<string, string> = {
+  dashboard: "/feed",
+  sources: "/sources",
+  "fetch-logs": "/fetch-logs",
+  agent: "/agent",
+  "agent-tokens": "/agent-tokens",
+  settings: "/settings",
+  "admin-users": "/admin/users",
+  "admin-groups": "/admin/groups",
+  "admin-templates": "/admin/templates",
+  "admin-audit": "/admin/audit",
+  "data-mgmt": "/admin/data-mgmt",
+};
+
 type AppShellProps = {
-  children: ReactNode;
-  activePage: string;
+  session: AuthSession | null;
   isDarkMode: boolean;
   isAdmin: boolean;
-  onPageChange: (page: string) => void;
   onThemeChange: (value: boolean) => void;
   onLogout: () => void;
 };
 
 export function AppShell({
-  children,
-  activePage,
   isDarkMode,
   isAdmin,
-  onPageChange,
   onThemeChange,
   onLogout,
 }: AppShellProps) {
   const { t } = useTranslation();
   const { token } = theme.useToken();
+  const navigate = useNavigate();
+  const location = useLocation();
   const siderTheme = isDarkMode ? "dark" : "light";
+
+  const selectedKey = pathToKey[location.pathname] || "dashboard";
 
   const menuItems = [
     { key: "dashboard", icon: <DashboardOutlined />, label: t("nav.feed") },
@@ -85,8 +113,11 @@ export function AppShell({
         <Menu
           theme={siderTheme}
           mode="inline"
-          selectedKeys={[activePage]}
-          onClick={({ key }) => onPageChange(key)}
+          selectedKeys={[selectedKey]}
+          onClick={({ key }) => {
+            const path = keyToPath[key];
+            if (path) navigate(path);
+          }}
           items={menuItems}
         />
       </Sider>
@@ -108,7 +139,9 @@ export function AppShell({
             </Button>
           </Space>
         </Header>
-        <Content className="app-content">{children}</Content>
+        <Content className="app-content">
+          <Outlet />
+        </Content>
       </Layout>
     </Layout>
   );
