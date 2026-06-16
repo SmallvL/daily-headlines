@@ -44,6 +44,7 @@ import {
   message
 } from "antd";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AuthSession } from "../../shared/api/auth";
 import {
@@ -112,6 +113,7 @@ function formatScheduleLabel(source: Source): string {
 }
 
 export function SourcesPage({ session }: SourcesPageProps) {
+  const { t } = useTranslation();
   const [form] = Form.useForm<ScheduleFormValues>();
   const [previewTitle, setPreviewTitle] = useState<string | null>(null);
   const [previewItems, setPreviewItems] = useState<Array<{ id: string; title: string; url: string | null }>>([]);
@@ -417,14 +419,14 @@ export function SourcesPage({ session }: SourcesPageProps) {
         <div className="source-section-header">
           <div>
             <Typography.Title level={4} style={{ marginBottom: 4 }}>
-              {editingSource ? "编辑信息源" : "添加信息源"}
+              {editingSource ? t("sources.edit") : t("sources.create")}
             </Typography.Title>
             <Typography.Text type="secondary">
-              支持 RSS 源、标准 JSON API 源和网页爬虫源的测试、保存和手动抓取。
+              {t("sources.subtitle")}
             </Typography.Text>
           </div>
           <Button icon={<ImportOutlined />} onClick={handleImportTemplate}>
-            导入模板
+            {t("sources.import")}
           </Button>
         </div>
 
@@ -909,7 +911,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
                 loading={testMutation.isPending}
                 onClick={() => getPayload().then((payload) => testMutation.mutate(payload))}
               >
-                测试预览
+                {t("sources.testPreview")}
               </Button>
               <Button
                 type="primary"
@@ -925,7 +927,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
                   });
                 }}
               >
-                {editingSourceId ? "更新信息源" : "保存信息源"}
+                {editingSourceId ? t("sources.updateSource") : t("sources.saveSource")}
               </Button>
               {editingSourceId ? (
                 <Button
@@ -935,7 +937,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
                     form.resetFields();
                   }}
                 >
-                  取消编辑
+                  {t("sources.cancelEdit")}
                 </Button>
               ) : null}
             </Space>
@@ -949,7 +951,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
           type="success"
           showIcon
           icon={<SearchOutlined />}
-          message={previewTitle ? `预览：${previewTitle}` : "预览成功"}
+          message={previewTitle ? t("sources.preview") + "：" + previewTitle : t("sources.preview")}
           description={
             <List
               size="small"
@@ -972,9 +974,9 @@ export function SourcesPage({ session }: SourcesPageProps) {
       <section className="source-list-section">
         <div className="source-section-header">
           <div>
-            <Typography.Title level={4} style={{ marginBottom: 4 }}>我的信息源</Typography.Title>
+            <Typography.Title level={4} style={{ marginBottom: 4 }}>{t("sources.mySources")}</Typography.Title>
             <Typography.Text type="secondary">
-              {sourcesQuery.data?.length ?? 0} 个信息源
+              {t("sources.count", { count: sourcesQuery.data?.length ?? 0 })}
             </Typography.Text>
           </div>
         </div>
@@ -985,10 +987,10 @@ export function SourcesPage({ session }: SourcesPageProps) {
           <Card>
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="暂无信息源"
+              description={t("sources.empty")}
             >
               <Button type="primary" icon={<ImportOutlined />} onClick={handleImportTemplate}>
-                导入模板
+                {t("sources.import")}
               </Button>
             </Empty>
           </Card>
@@ -1030,7 +1032,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
                         {formatScheduleLabel(source)}
                       </Tag>
                     ) : (
-                      <Tag>手动抓取</Tag>
+                      <Tag>{t("sources.manualFetch")}</Tag>
                     )}
                   </div>
 
@@ -1065,7 +1067,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
                 <Divider style={{ margin: "12px 0" }} />
 
                 <div className="source-card-actions">
-                  <Tooltip title="编辑">
+                  <Tooltip title={t("sources.edit")}>
                     <Button
                       type="text"
                       size="small"
@@ -1073,7 +1075,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
                       onClick={() => handleStartEdit(source)}
                     />
                   </Tooltip>
-                  <Tooltip title="导出模板">
+                  <Tooltip title={t("sources.export")}>
                     <Button
                       type="text"
                       size="small"
@@ -1081,7 +1083,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
                       onClick={() => handleExportTemplate(source.id, source.name)}
                     />
                   </Tooltip>
-                  <Tooltip title="手动抓取">
+                  <Tooltip title={t("sources.manualFetch")}>
                     <Button
                       type="text"
                       size="small"
@@ -1093,7 +1095,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
                       }}
                     />
                   </Tooltip>
-                  <Tooltip title={source.schedule_enabled ? "关闭定时" : "启用定时"}>
+                  <Tooltip title={source.schedule_enabled ? t("sources.scheduleDisableTitle") : t("sources.scheduleEnableTitle")}>
                     <Button
                       type="text"
                       size="small"
@@ -1117,7 +1119,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
                       }}
                     />
                   </Tooltip>
-                  <Tooltip title="删除">
+                  <Tooltip title={t("sources.delete")}>
                     <Button
                       type="text"
                       size="small"
@@ -1142,7 +1144,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
             <Typography.Title level={5} style={{ marginBottom: 12 }}>
               <Space>
                 <ClockCircleOutlined />
-                最近抓取日志
+                {t("sources.fetchLogs")}
               </Space>
             </Typography.Title>
             {fetchLogsQuery.isLoading ? (
