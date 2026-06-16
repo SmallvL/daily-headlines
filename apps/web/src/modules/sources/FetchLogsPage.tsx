@@ -8,6 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Button, Card, Select, Space, Table, Tag, Typography } from "antd";
 import { useState } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import { AuthSession } from "../../shared/api/auth";
 import { Source, SourceFetchLog, listAllFetchLogs, listSources } from "../../shared/api/sources";
 
@@ -22,20 +24,22 @@ const STATUS_COLORS: Record<string, string> = {
   retrying: "orange",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  success: "成功",
-  failed: "失败",
-  running: "运行中",
-  retrying: "重试中",
-};
-
-const TRIGGER_LABELS: Record<string, string> = {
-  manual: "手动",
-  schedule: "定时",
-  retry: "重试",
-};
-
 export function FetchLogsPage({ session }: FetchLogsPageProps) {
+  const { t } = useTranslation();
+
+  const STATUS_LABELS: Record<string, string> = {
+    success: t("taskLogs.success"),
+    failed: t("taskLogs.failed"),
+    running: t("taskLogs.running"),
+    retrying: t("taskLogs.retrying"),
+  };
+
+  const TRIGGER_LABELS: Record<string, string> = {
+    manual: t("taskLogs.manual"),
+    schedule: t("taskLogs.scheduled"),
+    retry: t("taskLogs.retry"),
+  };
+
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
   const [triggerFilter, setTriggerFilter] = useState<string | undefined>(undefined);
   const [sourceFilter, setSourceFilter] = useState<string | undefined>(undefined);
@@ -155,18 +159,18 @@ export function FetchLogsPage({ session }: FetchLogsPageProps) {
           <Typography.Title level={4} style={{ marginBottom: 4 }}>
             <Space>
               <ClockCircleOutlined />
-              任务日志
+              {t("taskLogs.title")}
             </Space>
           </Typography.Title>
           <Typography.Text type="secondary">
-            查看所有信息源的抓取记录和状态
+            {t("taskLogs.subtitle")}
           </Typography.Text>
         </div>
         <Button
           icon={<ReloadOutlined />}
           onClick={() => logsQuery.refetch()}
         >
-          刷新
+          {t("taskLogs.refresh")}
         </Button>
       </div>
 
@@ -177,7 +181,7 @@ export function FetchLogsPage({ session }: FetchLogsPageProps) {
         <Space style={{ marginBottom: 16 }} wrap>
           <Select
             allowClear
-            placeholder="按信息源筛选"
+            placeholder={t("taskLogs.allSources")}
             style={{ minWidth: 180 }}
             value={sourceFilter}
             onChange={(v) => {
@@ -192,7 +196,7 @@ export function FetchLogsPage({ session }: FetchLogsPageProps) {
           />
           <Select
             allowClear
-            placeholder="按状态筛选"
+            placeholder={t("taskLogs.allStatus")}
             style={{ width: 120 }}
             value={statusFilter}
             onChange={(v) => {
@@ -200,16 +204,16 @@ export function FetchLogsPage({ session }: FetchLogsPageProps) {
               setPage(1);
             }}
             options={[
-              { label: "成功", value: "success" },
-              { label: "失败", value: "failed" },
-              { label: "运行中", value: "running" },
-              { label: "重试中", value: "retrying" },
+              { label: STATUS_LABELS["success"], value: "success" },
+              { label: STATUS_LABELS["failed"], value: "failed" },
+              { label: STATUS_LABELS["running"], value: "running" },
+              { label: STATUS_LABELS["retrying"], value: "retrying" },
             ]}
             suffixIcon={<FilterOutlined />}
           />
           <Select
             allowClear
-            placeholder="按触发方式"
+            placeholder="Filter by trigger"
             style={{ width: 120 }}
             value={triggerFilter}
             onChange={(v) => {
@@ -217,9 +221,9 @@ export function FetchLogsPage({ session }: FetchLogsPageProps) {
               setPage(1);
             }}
             options={[
-              { label: "手动", value: "manual" },
-              { label: "定时", value: "schedule" },
-              { label: "重试", value: "retry" },
+              { label: TRIGGER_LABELS["manual"], value: "manual" },
+              { label: TRIGGER_LABELS["schedule"], value: "schedule" },
+              { label: TRIGGER_LABELS["retry"], value: "retry" },
             ]}
             suffixIcon={<FilterOutlined />}
           />
@@ -236,7 +240,7 @@ export function FetchLogsPage({ session }: FetchLogsPageProps) {
             pageSize,
             total: logsQuery.data?.total ?? 0,
             onChange: setPage,
-            showTotal: (total) => `共 ${total} 条记录`,
+            showTotal: (total) => t("taskLogs.totalRecords", { total }),
             showSizeChanger: false,
           }}
         />

@@ -184,7 +184,7 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
                   label: (
                     <Space>
                       <span>🇨🇳</span>
-                      <span>简体中文</span>
+                      <span>{t("settings.chineseSimplified")}</span>
                       {preference.language === "zh-CN" && <CheckOutlined />}
                     </Space>
                   ),
