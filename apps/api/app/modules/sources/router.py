@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, UploadFile
-from fastapi.responses import Response
+from starlette.responses import Response
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -42,7 +42,7 @@ def get_source(
     return ApiResponse(data=source_service.get_source(db, current_user, source_id))
 
 
-@router.post("", response_model=ApiResponse[SourceRead])
+@router.post("", response_model=ApiResponse[SourceRead], status_code=201)
 def create_source(
     payload: SourceCreate,
     current_user: CurrentUserDep,
@@ -116,14 +116,14 @@ def update_schedule(
     return ApiResponse(data=source_service.update_schedule(db, current_user, source_id, payload))
 
 
-@router.delete("/{source_id}")
+@router.delete("/{source_id}", status_code=204)
 def delete_source(
     source_id: str,
     current_user: CurrentUserDep,
     db: DbDep,
-) -> ApiResponse[None]:
+) -> None:
     source_service.delete_source(db, current_user, source_id)
-    return ApiResponse(data=None)
+    return Response(status_code=204)
 
 
 @router.get("/{source_id}/export-template", response_model=ApiResponse[SourceTemplate])

@@ -12,6 +12,7 @@ from app.modules.admin.models import (
     UserGroup,
     UserGroupMember,
 )
+from app.modules.data_mgmt.models import DataRetentionConfig
 from app.modules.agent.models import AgentDraft, LlmProvider
 from app.modules.agent_tokens.models import AgentToken
 from app.modules.feed.models import FeedItem, UserItemState
