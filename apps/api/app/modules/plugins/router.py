@@ -116,6 +116,9 @@ async def init_auth(
     if result.credentials:
         response_data["has_credentials"] = True
 
+    if result.user_info:
+        response_data["user_info"] = result.user_info
+
     return ApiResponse(data=response_data)
 
 

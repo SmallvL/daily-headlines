@@ -65,6 +65,7 @@ import {
 } from "../../shared/api/sources";
 import { relativeTime } from "../../shared/utils/time";
 import { PluginSelector, QRCodeLogin } from "../../features/plugins";
+import { pluginsApi } from "../../features/plugins/api";
 
 type SourcesPageProps = {
   session: AuthSession;
@@ -125,6 +126,8 @@ export function SourcesPage({ session }: SourcesPageProps) {
   const [showQRCodeModal, setShowQRCodeModal] = useState(false);
   const [pluginCredentials, setPluginCredentials] = useState<Record<string, any> | null>(null);
   const [selectedPluginId, setSelectedPluginId] = useState<string>("");
+  const [cookieChecking, setCookieChecking] = useState(false);
+  const [cookieCheckResult, setCookieCheckResult] = useState<string>("");
   const sourceType = Form.useWatch("type", form) ?? "rss";
   const scheduleEnabled = Form.useWatch("schedule_enabled", form) ?? false;
   const scheduleMode = Form.useWatch("schedule_mode", form) ?? "interval";
@@ -548,12 +551,46 @@ export function SourcesPage({ session }: SourcesPageProps) {
               )}
 
               {authType === "cookie" && (
-                <Form.Item label="Cookie" name={["auth", "cookies"]}>
+                <Form.Item label="Cookie">
                   <Input.TextArea
                     placeholder="从浏览器复制 Cookie，例如：SESSDATA=xxx; bili_jct=xxx"
                     rows={3}
                     style={{ fontFamily: "monospace", fontSize: 12 }}
+                    onChange={(e) => {
+                      form.setFieldValue(["auth", "cookies"], e.target.value);
+                      setCookieCheckResult("");
+                    }}
                   />
+                  <Button
+                    size="small"
+                    style={{ marginTop: 8 }}
+                    loading={cookieChecking}
+                    onClick={async () => {
+                      const cookie = form.getFieldValue(["auth", "cookies"]);
+                      if (!cookie) return;
+                      setCookieChecking(true);
+                      setCookieCheckResult("");
+                      try {
+                        const result = await pluginsApi.initAuth(session, selectedPluginId || "bilibili", "cookie", { cookie_string: cookie });
+                        if (result.success && result.user_info) {
+                          setCookieCheckResult(`已登录 ✓ ${result.user_info.username || result.user_info.uname || ""}`);
+                        } else {
+                          setCookieCheckResult("Cookie 无效或已过期");
+                        }
+                      } catch {
+                        setCookieCheckResult("检测失败，请稍后重试");
+                      } finally {
+                        setCookieChecking(false);
+                      }
+                    }}
+                  >
+                    检测登录
+                  </Button>
+                  {cookieCheckResult && (
+                    <Typography.Text type={cookieCheckResult.includes("✓") ? "success" : "secondary"} style={{ fontSize: 12, display: "block", marginTop: 4 }}>
+                      {cookieCheckResult}
+                    </Typography.Text>
+                  )}
                 </Form.Item>
               )}
 

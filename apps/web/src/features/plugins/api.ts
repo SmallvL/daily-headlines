@@ -29,6 +29,7 @@ export interface AuthInitResult {
   session_id?: string;
   expires_in?: number;
   has_credentials?: boolean;
+  user_info?: Record<string, string>;
 }
 
 export interface QRCodeStatus {
