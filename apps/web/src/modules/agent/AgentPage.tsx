@@ -504,7 +504,7 @@ export function AgentPage({ session, onCreateSource }: Props) {
       {currentStep === 2 && (
         <Card>
           <div style={{ textAlign: "center", padding: 40 }}>
-            <Title level={2} style={{ color: "#52c41a" }}>
+            <Title level={2} style={{ color: "var(--ant-color-success)" }}>
               ✅ 信息源已创建
             </Title>
             {createdSource && (

@@ -1,5 +1,5 @@
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Alert, Button, Form, Input, Typography } from "antd";
+import { Alert, Button, Form, Input, theme, Typography } from "antd";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,7 +8,6 @@ import { AuthSession, login } from "../../shared/api/auth";
 import { getLoginBackground } from "../../shared/api/preferences";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
-const DEFAULT_GRADIENT = "linear-gradient(135deg, #f5f7fa 0%, #e4e7f1 100%)";
 
 type LoginValues = {
   username: string;
@@ -24,6 +23,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
+  const { token } = theme.useToken();
 
   useEffect(() => {
     getLoginBackground()
@@ -50,14 +50,15 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         backgroundSize: "cover",
         backgroundPosition: "center",
       }
-    : { background: DEFAULT_GRADIENT };
+    : {};
 
   const cardBackground = backgroundUrl
-    ? "rgba(255, 255, 255, 0.96)"
-    : "#ffffff";
+    ? `rgba(${parseInt(token.colorBgContainer.slice(1, 3), 16)}, ${parseInt(token.colorBgContainer.slice(3, 5), 16)}, ${parseInt(token.colorBgContainer.slice(5, 7), 16)}, 0.96)`
+    : token.colorBgContainer;
 
   return (
     <main
+      className={backgroundUrl ? undefined : "login-page-bg"}
       style={{
         minHeight: "100vh",
         display: "grid",

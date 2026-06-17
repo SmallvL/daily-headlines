@@ -272,7 +272,7 @@ export function AgentTokensPage({ session }: Props) {
             <div style={{ marginBottom: 16 }}>
               <Text strong>Token：</Text>
               <div style={{
-                background: "#f5f5f5",
+                background: "var(--color-bg-subtle)",
                 padding: 12,
                 borderRadius: 6,
                 fontFamily: "monospace",

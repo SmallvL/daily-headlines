@@ -59,6 +59,7 @@ export function App() {
       algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
       token: {
         borderRadius: 6,
+        // Brand primary color — kept consistent across light/dark themes
         colorPrimary: "#1677ff",
       },
     }),

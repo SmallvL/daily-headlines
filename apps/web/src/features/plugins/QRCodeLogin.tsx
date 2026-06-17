@@ -171,14 +171,14 @@ export function QRCodeLogin({
   const renderStatusIcon = () => {
     switch (status) {
       case "ready":
-        return <ScanOutlined style={{ color: "#1890ff" }} />;
+        return <ScanOutlined style={{ color: "var(--ant-color-primary)" }} />;
       case "scanned":
-        return <LoadingOutlined style={{ color: "#faad14" }} />;
+        return <LoadingOutlined style={{ color: "var(--ant-color-warning)" }} />;
       case "confirmed":
-        return <CheckCircleOutlined style={{ color: "#52c41a" }} />;
+        return <CheckCircleOutlined style={{ color: "var(--ant-color-success)" }} />;
       case "expired":
       case "error":
-        return <CloseCircleOutlined style={{ color: "#ff4d4f" }} />;
+        return <CloseCircleOutlined style={{ color: "var(--ant-color-error)" }} />;
       default:
         return <Spin size="small" />;
     }
@@ -218,11 +218,11 @@ export function QRCodeLogin({
           width: 280,
           height: 280,
           margin: "0 auto 20px",
-          border: "1px solid #d9d9d9",
+          border: "1px solid var(--ant-color-border)",
           borderRadius: 8,
           overflow: "hidden",
           position: "relative",
-          backgroundColor: status === "confirmed" ? "#f6ffed" : "#fff",
+          backgroundColor: status === "confirmed" ? "var(--ant-color-success-bg)" : "var(--ant-color-bg-container)",
         }}
       >
         {loading ? (
@@ -242,7 +242,7 @@ export function QRCodeLogin({
             }}
           />
         ) : (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#999" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--ant-color-text-tertiary)" }}>
             二维码生成失败
           </div>
         )}

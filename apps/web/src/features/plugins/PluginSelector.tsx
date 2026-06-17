@@ -65,8 +65,8 @@ export function PluginSelector({ session, value, onChange, showAuthMethods = tru
             onClick={() => onChange?.(plugin.id)}
             style={{
               height: "100%",
-              borderColor: value === plugin.id ? "#1890ff" : undefined,
-              backgroundColor: value === plugin.id ? "#e6f7ff" : undefined,
+              borderColor: value === plugin.id ? "var(--ant-color-primary)" : undefined,
+              backgroundColor: value === plugin.id ? "var(--ant-color-primary-bg)" : undefined,
             }}
             styles={{ body: { padding: 12 } }}
           >
@@ -88,7 +88,7 @@ export function PluginSelector({ session, value, onChange, showAuthMethods = tru
                       width: 28,
                       height: 28,
                       borderRadius: 4,
-                      backgroundColor: "#f0f0f0",
+                      backgroundColor: "var(--color-bg-subtle)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -102,7 +102,7 @@ export function PluginSelector({ session, value, onChange, showAuthMethods = tru
                   <Title level={5} style={{ margin: 0, fontSize: 14 }}>{plugin.name}</Title>
                   <Text type="secondary" style={{ fontSize: 11 }}>{plugin.description}</Text>
                 </div>
-                {value === plugin.id && <CheckCircleFilled style={{ color: "#1890ff", fontSize: 18 }} />}
+                {value === plugin.id && <CheckCircleFilled style={{ color: "var(--ant-color-primary)", fontSize: 18 }} />}
               </div>
 
               {showAuthMethods && (
