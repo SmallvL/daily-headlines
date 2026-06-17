@@ -6,7 +6,7 @@ import logging
 from typing import Any, Dict, Optional
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
@@ -65,7 +65,7 @@ async def get_plugin_info(
 async def init_auth(
     plugin_id: str,
     method: str = Query(..., description="Authentication method (qrcode, cookie)"),
-    credentials: Optional[Dict[str, Any]] = None,
+    credentials: Optional[Dict[str, Any]] = Body(None),
     current_user: CurrentUserDep = None,
 ) -> ApiResponse[Dict[str, Any]]:
     """Initialize authentication for a plugin.
