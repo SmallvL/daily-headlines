@@ -16,6 +16,7 @@ import {
   Tooltip,
 } from "antd";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 
 import { AuthSession } from "../../shared/api/auth";
@@ -142,6 +143,7 @@ type DashboardPageProps = {
 };
 
 export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
+  const { t } = useTranslation();
   const { token } = theme.useToken();
   const [query, setQuery] = useState<FeedQuery>({});
   const [draftKeyword, setDraftKeyword] = useState("");
@@ -168,7 +170,7 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
 
   /* ── Mutations ── */
   const saveSearchMutation = useMutation({
-    mutationFn: () => createSavedSearch(session, saveName || "未命名搜索", query),
+    mutationFn: () => createSavedSearch(session, saveName || t("common.unnamedSearch"), query),
     onSuccess: async () => {
       setSaveName("");
       await savedSearchesQuery.refetch();
@@ -622,7 +624,7 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
         <div className="feed-header">
           <h2>今日信息流</h2>
           <p>
-            {feedQuery.isLoading ? "加载中..." : `共 ${totalItems} 条内容`}
+            {feedQuery.isLoading ? t("common.loading") : `共 ${totalItems} 条内容`}
           </p>
         </div>
 
@@ -673,7 +675,7 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
             <Spin size="large" />
           </div>
         ) : items.length === 0 ? (
-          <Empty description="暂无信息，先到信息源页面添加 RSS 源" className="empty-container" />
+          <Empty description={t("common.empty")} className="empty-container" />
         ) : null}
       </section>
 

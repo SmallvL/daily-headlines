@@ -29,7 +29,9 @@
     "view": "View",
     "refresh": "Refresh",
     "copy": "Copy",
-    "close": "Close"
+    "close": "Close",
+    "empty": "No items yet. Add an RSS source to get started.",
+    "unnamedSearch": "Unnamed Search"
   },
   "auth": {
     "username": "Username",

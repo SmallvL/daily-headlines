@@ -29,7 +29,9 @@
     "view": "查看",
     "refresh": "刷新",
     "copy": "复制",
-    "close": "关闭"
+    "close": "关闭",
+    "empty": "暂无信息，先到信息源页面添加 RSS 源",
+    "unnamedSearch": "未命名搜索"
   },
   "auth": {
     "username": "用户名",
