@@ -46,9 +46,8 @@ class WeiboAuth:
             )
             
             # Extract session from response
-            # Weibo uses a different flow - get image first, then poll with alt param
-            if response.status_code != 200:
-                raise Exception("Failed to generate QR code")
+            if response.status_code != 200 or not response.content:
+                raise Exception("微博二维码接口已变更，请使用 Cookie 方式登录（从浏览器复制微博 Cookie）")
             
             qrcode_image = response.content
             

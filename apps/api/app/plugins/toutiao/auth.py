@@ -55,7 +55,8 @@ class ToutiaoAuth:
             data = response.json()
             
             if data.get("error_code", -1) != 0:
-                raise Exception(f"Failed to generate QR code: {data.get('error_message')}")
+                err_msg = data.get("description") or data.get("error_message") or "API blocked"
+                raise Exception(f"今日头条认证暂不可用：{err_msg}。请使用 Cookie 方式登录")
             
             qrcode_url = data.get("data", {}).get("qrcode", "")
             session_id = data.get("data", {}).get("session_id", "")
