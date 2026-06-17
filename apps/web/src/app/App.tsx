@@ -96,6 +96,12 @@ export function App() {
     setSession(null);
   }
 
+  function handleThemeToggle(dark: boolean) {
+    setIsDarkMode(dark);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    localStorage.setItem("theme", dark ? "dark" : "light");
+  }
+
   function handlePreferenceChange(pref: UserPreference) {
     // Update theme
     if (pref.theme === "dark") {
@@ -129,7 +135,7 @@ export function App() {
             }
           />
           <Route element={<ProtectedRoute session={session} />}>
-            <Route element={<AppShell session={session} isDarkMode={isDarkMode} isAdmin={isAdmin} onThemeChange={setIsDarkMode} onLogout={handleLogout} />}>
+            <Route element={<AppShell session={session} isDarkMode={isDarkMode} isAdmin={isAdmin} onThemeChange={handleThemeToggle} onLogout={handleLogout} />}>
               <Route path="/feed" element={<ErrorBoundary><DashboardPage session={session!} onCreateSource={() => navigate("/sources")} /></ErrorBoundary>} />
               <Route path="/sources" element={<ErrorBoundary><SourcesPage session={session!} /></ErrorBoundary>} />
               <Route path="/fetch-logs" element={<ErrorBoundary><FetchLogsPage session={session!} /></ErrorBoundary>} />
