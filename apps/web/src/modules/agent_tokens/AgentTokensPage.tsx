@@ -246,7 +246,7 @@ export function AgentTokensPage({ session }: Props) {
         okText="创建"
         cancelText="取消"
         okButtonProps={{ loading: creating }}
-        destroyOnClose
+        destroyOnHidden
       >
         {createdToken ? (
           <div>

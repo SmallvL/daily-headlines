@@ -25,21 +25,15 @@ router = APIRouter()
 DbDep = Annotated[Session, Depends(get_db)]
 
 
+# ── Static routes first (no path params) ──
+
+
 @router.get("", response_model=ApiResponse[list[SourceRead]])
 def list_sources(
     current_user: CurrentUserDep,
     db: DbDep,
 ) -> ApiResponse[list[SourceRead]]:
     return ApiResponse(data=source_service.list_sources(db, current_user))
-
-
-@router.get("/{source_id}", response_model=ApiResponse[SourceRead])
-def get_source(
-    source_id: str,
-    current_user: CurrentUserDep,
-    db: DbDep,
-) -> ApiResponse[SourceRead]:
-    return ApiResponse(data=source_service.get_source(db, current_user, source_id))
 
 
 @router.post("", response_model=ApiResponse[SourceRead], status_code=201)
@@ -60,15 +54,6 @@ async def test_source(
     return ApiResponse(data=await source_service.test_source(db, current_user, payload))
 
 
-@router.post("/{source_id}/fetch-now", response_model=ApiResponse[FetchResult])
-async def fetch_now(
-    source_id: str,
-    current_user: CurrentUserDep,
-    db: DbDep,
-) -> ApiResponse[FetchResult]:
-    return ApiResponse(data=await source_service.fetch_source(db, current_user, source_id))
-
-
 @router.get("/fetch-logs", response_model=ApiResponse[dict])
 def list_all_fetch_logs(
     current_user: CurrentUserDep,
@@ -85,6 +70,60 @@ def list_all_fetch_logs(
         page=page, page_size=page_size,
     )
     return ApiResponse(data=result)
+
+
+@router.post("/import-template", response_model=ApiResponse[SourceRead])
+def import_template(
+    template: SourceTemplate,
+    current_user: CurrentUserDep,
+    db: DbDep,
+) -> ApiResponse[SourceRead]:
+    return ApiResponse(data=source_service.import_template(db, current_user, template))
+
+
+@router.get("/export/opml")
+def export_sources_opml(
+    current_user: CurrentUserDep,
+    db: DbDep,
+) -> Response:
+    opml_content = export_opml(db, current_user)
+    return Response(
+        content=opml_content,
+        media_type="application/xml",
+        headers={"Content-Disposition": "attachment; filename=sources.opml"},
+    )
+
+
+@router.post("/import/opml", response_model=ApiResponse[list[SourceRead]])
+def import_sources_opml(
+    file: UploadFile = File(...),
+    current_user: CurrentUserDep = None,
+    db: DbDep = None,
+) -> ApiResponse[list[SourceRead]]:
+    content = file.file.read().decode("utf-8")
+    sources = import_opml(db, current_user, content)
+    return ApiResponse(data=sources)
+
+
+# ── Parametrized routes second (source_id etc.) ──
+
+
+@router.get("/{source_id}", response_model=ApiResponse[SourceRead])
+def get_source(
+    source_id: str,
+    current_user: CurrentUserDep,
+    db: DbDep,
+) -> ApiResponse[SourceRead]:
+    return ApiResponse(data=source_service.get_source(db, current_user, source_id))
+
+
+@router.post("/{source_id}/fetch-now", response_model=ApiResponse[FetchResult])
+async def fetch_now(
+    source_id: str,
+    current_user: CurrentUserDep,
+    db: DbDep,
+) -> ApiResponse[FetchResult]:
+    return ApiResponse(data=await source_service.fetch_source(db, current_user, source_id))
 
 
 @router.get("/{source_id}/fetch-logs", response_model=ApiResponse[list[SourceFetchLogRead]])
@@ -133,36 +172,3 @@ def export_template(
     db: DbDep,
 ) -> ApiResponse[SourceTemplate]:
     return ApiResponse(data=source_service.get_template(db, current_user, source_id))
-
-
-@router.post("/import-template", response_model=ApiResponse[SourceRead])
-def import_template(
-    template: SourceTemplate,
-    current_user: CurrentUserDep,
-    db: DbDep,
-) -> ApiResponse[SourceRead]:
-    return ApiResponse(data=source_service.import_template(db, current_user, template))
-
-
-@router.get("/export/opml")
-def export_sources_opml(
-    current_user: CurrentUserDep,
-    db: DbDep,
-) -> Response:
-    opml_content = export_opml(db, current_user)
-    return Response(
-        content=opml_content,
-        media_type="application/xml",
-        headers={"Content-Disposition": "attachment; filename=sources.opml"},
-    )
-
-
-@router.post("/import/opml", response_model=ApiResponse[list[SourceRead]])
-def import_sources_opml(
-    file: UploadFile = File(...),
-    current_user: CurrentUserDep = None,
-    db: DbDep = None,
-) -> ApiResponse[list[SourceRead]]:
-    content = file.file.read().decode("utf-8")
-    sources = import_opml(db, current_user, content)
-    return ApiResponse(data=sources)

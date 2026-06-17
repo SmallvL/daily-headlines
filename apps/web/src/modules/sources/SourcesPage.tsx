@@ -1195,7 +1195,7 @@ export function SourcesPage({ session }: SourcesPageProps) {
         onCancel={() => setShowQRCodeModal(false)}
         footer={null}
         width={420}
-        destroyOnClose
+        destroyOnHidden
       >
         <QRCodeLogin
           session={session}
