@@ -187,7 +187,10 @@ class SourceService:
         source_id: str,
     ) -> FetchResult:
         source = self._get_owned_source(db, current_user, source_id)
-        return await self._fetch_source(db, source, trigger="manual")
+        try:
+            return await self._fetch_source(db, source, trigger="manual")
+        except ValueError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     async def _fetch_source(
         self,
