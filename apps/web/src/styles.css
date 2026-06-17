@@ -59,6 +59,15 @@ html[data-theme="dark"] {
     background: rgba(0, 0, 0, 0.7);
   }
   --page-bg: none;
+  .ant-layout {
+    background: var(--color-bg) !important;
+  }
+  .ant-layout-content {
+    background: inherit !important;
+  }
+  .ant-card {
+    background: var(--color-card-bg);
+  }
 }
 
 body {
@@ -138,6 +147,12 @@ body {
   overflow-y: auto;
   max-width: 1400px;
   width: 100%;
+  background: inherit;
+}
+
+/* Override Ant Design Layout.Content white default */
+.ant-layout-content.app-content {
+  background: inherit;
 }
 
 .app-main {
