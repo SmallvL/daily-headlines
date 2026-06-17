@@ -46,6 +46,8 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     db = SessionLocal()
     try:
         seed_admin_user(db)
+    except Exception:
+        logger.warning("Failed to seed admin user (database may not be ready)")
     finally:
         db.close()
     if settings.scheduler_enabled:
