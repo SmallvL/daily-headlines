@@ -37,6 +37,7 @@ class AuthResult:
     qrcode_image: Optional[bytes] = None  # 二维码图片数据
     auth_url: Optional[str] = None  # 授权页面 URL
     expires_in: Optional[int] = None  # 过期时间（秒）
+    user_info: Optional[Dict[str, str]] = None  # 用户信息（用户名、头像等）
 
 
 @dataclass
