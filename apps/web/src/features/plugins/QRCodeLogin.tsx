@@ -237,7 +237,6 @@ export function QRCodeLogin({
               width: "100%",
               height: "100%",
               objectFit: "contain",
-              padding: 20,
               opacity: status === "expired" ? 0.5 : 1,
             }}
           />
