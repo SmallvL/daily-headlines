@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import { getPreference } from "../shared/api/preferences";
 import { AppShell } from "./AppShell";
 import { LoginPage } from "../modules/auth/LoginPage";
 import { DashboardPage } from "../modules/dashboard/DashboardPage";
@@ -63,6 +64,25 @@ export function App() {
     }),
     [isDarkMode]
   );
+
+  // Fetch user preferences after login to apply theme/language
+  useEffect(() => {
+    if (!session) return;
+    getPreference(session).then((pref) => {
+      if (pref.theme === "dark") {
+        setIsDarkMode(true);
+        document.documentElement.setAttribute("data-theme", "dark");
+      } else if (pref.theme === "light") {
+        setIsDarkMode(false);
+        document.documentElement.setAttribute("data-theme", "light");
+      } else {
+        const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setIsDarkMode(isDark);
+        document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+      }
+      setAntdLocale(pref.language === "en-US" ? enUS : zhCN);
+    }).catch(() => {});
+  }, [session]);
 
   function handleLogin(nextSession: AuthSession) {
     localStorage.setItem("access_token", nextSession.accessToken);
