@@ -33,6 +33,15 @@ def list_sources(
     return ApiResponse(data=source_service.list_sources(db, current_user))
 
 
+@router.get("/{source_id}", response_model=ApiResponse[SourceRead])
+def get_source(
+    source_id: str,
+    current_user: CurrentUserDep,
+    db: DbDep,
+) -> ApiResponse[SourceRead]:
+    return ApiResponse(data=source_service.get_source(db, current_user, source_id))
+
+
 @router.post("", response_model=ApiResponse[SourceRead])
 def create_source(
     payload: SourceCreate,

@@ -3,7 +3,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
@@ -77,6 +77,16 @@ def create_app() -> FastAPI:
     )
     register_request_middleware(app, metrics_collector)
     register_error_handlers(app)
+
+    @app.middleware("http")
+    async def strip_api_trailing_slash(request: Request, call_next):
+        path = request.url.path
+        if len(path) > 1 and path.endswith("/") and path.startswith("/api"):
+            new_path = path.rstrip("/")
+            if new_path:
+                from starlette.responses import RedirectResponse
+                return RedirectResponse(url=str(request.url.replace(path=new_path)), status_code=307)
+        return await call_next(request)
 
     app.include_router(health_router, prefix="/api", tags=["health"])
     app.include_router(auth_router, prefix="/api/auth", tags=["auth"])

@@ -85,6 +85,10 @@ class SourceService:
         db.refresh(source)
         return self._to_read(source)
 
+    def get_source(self, db: Session, current_user: CurrentUser, source_id: str) -> SourceRead:
+        source = self._get_owned_source(db, current_user, source_id)
+        return self._to_read(source)
+
     def delete_source(self, db: Session, current_user: CurrentUser, source_id: str) -> None:
         source = self._get_owned_source(db, current_user, source_id)
         source.deleted_at = datetime.now(timezone.utc)
