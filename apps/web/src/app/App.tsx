@@ -42,11 +42,9 @@ export function App() {
   });
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") return true;
-    if (savedTheme === "system") {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches;
-    }
-    return false;
+    const isDark = savedTheme === "dark" || (savedTheme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    return isDark;
   });
   const [antdLocale, setAntdLocale] = useState(i18n.language === "en-US" ? enUS : zhCN);
 
@@ -77,13 +75,16 @@ export function App() {
     if (pref.theme === "dark") {
       setIsDarkMode(true);
       localStorage.setItem("theme", "dark");
+      document.documentElement.setAttribute("data-theme", "dark");
     } else if (pref.theme === "light") {
       setIsDarkMode(false);
       localStorage.setItem("theme", "light");
+      document.documentElement.setAttribute("data-theme", "light");
     } else {
       const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       setIsDarkMode(isDark);
       localStorage.setItem("theme", "system");
+      document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
     }
     // Update locale
     setAntdLocale(pref.language === "en-US" ? enUS : zhCN);
