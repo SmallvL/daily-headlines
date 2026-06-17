@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field, HttpUrl, model_validator
+from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
 
 from app.modules.feed.schemas import FeedItemRead
 
@@ -36,6 +36,14 @@ class SourceCreate(BaseModel):
     cron_days_of_week: str | None = None
     cron_hour: int | None = Field(default=None, ge=0, le=23)
     cron_minute: int | None = Field(default=None, ge=0, le=59)
+
+    @field_validator("name")
+    @classmethod
+    def sanitize_name(cls, v: str) -> str:
+        allowed = v.strip()[:160]
+        # Strip HTML tags for XSS prevention
+        allowed = allowed.replace("<", "&lt;").replace(">", "&gt;")
+        return allowed
 
     @model_validator(mode="after")
     def validate_schedule(self) -> "SourceCreate":
