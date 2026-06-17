@@ -219,9 +219,9 @@ class SourceService:
             extra_headers = build_auth_headers(auth_type, auth_config)
             
             # Extract plugin info
-            plugin_id = auth_data.get("plugin_id")
-            plugin_credentials = auth_data.get("plugin_credentials")
-            plugin_config = auth_data.get("plugin_config")
+            plugin_id = auth_config.get("plugin_id")
+            plugin_credentials = auth_config.get("plugin_credentials")
+            plugin_config = auth_config.get("plugin_config")
 
             _, items = await self._fetch_source_items(
                 source_id=source.id,
@@ -483,7 +483,7 @@ class SourceService:
         auth_config = auth_data.get("auth_config", {})
         
         # Get plugin info
-        plugin_id = auth_data.get("plugin_id")
+        plugin_id = auth_config.get("plugin_id")
         plugin_name = None
         plugin_user_info = None
         
@@ -492,7 +492,7 @@ class SourceService:
             plugin = registry.get(plugin_id)
             if plugin:
                 plugin_name = plugin.display_name
-            plugin_credentials = auth_data.get("plugin_credentials", {})
+            plugin_credentials = auth_config.get("plugin_credentials", {})
             if plugin_credentials:
                 plugin_user_info = plugin_credentials.get("user_info")
 
