@@ -128,6 +128,9 @@ export function SourcesPage({ session }: SourcesPageProps) {
   const [selectedPluginId, setSelectedPluginId] = useState<string>("");
   const [cookieChecking, setCookieChecking] = useState(false);
   const [cookieCheckResult, setCookieCheckResult] = useState<string>("");
+  const [subscriptionTypes, setSubscriptionTypes] = useState<Array<{id: string; name: string; description: string}>>([]);
+  const [selectedFetchType, setSelectedFetchType] = useState<string>("");
+  const [pluginUserInfo, setPluginUserInfo] = useState<Record<string, string> | null>(null);
   const sourceType = Form.useWatch("type", form) ?? "rss";
   const scheduleEnabled = Form.useWatch("schedule_enabled", form) ?? false;
   const scheduleMode = Form.useWatch("schedule_mode", form) ?? "interval";
@@ -277,9 +280,10 @@ export function SourcesPage({ session }: SourcesPageProps) {
     // Build auth config
     const authConfig = values.auth || { auth_type: "none" };
 
-    // If using plugin auth, include plugin credentials
+    // If using plugin auth, include plugin credentials and config
     if (authConfig.auth_type === "qrcode" && pluginCredentials) {
       authConfig.plugin_credentials = pluginCredentials;
+      authConfig.plugin_config = { fetch_type: selectedFetchType || "dynamic" };
     }
 
     if (values.type === "api") {
@@ -530,9 +534,18 @@ export function SourcesPage({ session }: SourcesPageProps) {
                   <PluginSelector
                     session={session}
                     value={selectedPluginId}
-                    onChange={(pluginId) => {
+                    onChange={async (pluginId) => {
                       setSelectedPluginId(pluginId);
                       form.setFieldsValue({ auth: { ...form.getFieldValue("auth"), plugin_id: pluginId } });
+                      setPluginCredentials(null);
+                      setPluginUserInfo(null);
+                      try {
+                        const detail = await pluginsApi.get(session, pluginId);
+                        setSubscriptionTypes(detail.subscription_types || []);
+                        if (detail.subscription_types?.length) {
+                          setSelectedFetchType(detail.subscription_types[0].id);
+                        }
+                      } catch {}
                     }}
                     showAuthMethods={false}
                   />
@@ -543,9 +556,27 @@ export function SourcesPage({ session }: SourcesPageProps) {
                       icon={<ScanOutlined />}
                       onClick={() => setShowQRCodeModal(true)}
                       style={{ width: "100%", marginTop: 16 }}
+                      disabled={!!pluginCredentials}
                     >
-                      扫码登录
+                      {pluginCredentials ? "已登录 ✓" : "扫码登录"}
                     </Button>
+                  )}
+
+                  {pluginCredentials && subscriptionTypes.length > 0 && (
+                    <div style={{ marginTop: 16, padding: 16, background: "var(--color-bg-subtle)", borderRadius: 8 }}>
+                      <Typography.Text strong style={{ display: "block", marginBottom: 8 }}>
+                        选择订阅内容
+                      </Typography.Text>
+                      <Select
+                        value={selectedFetchType}
+                        onChange={(v) => setSelectedFetchType(v)}
+                        style={{ width: "100%" }}
+                        options={subscriptionTypes.map(st => ({ label: `${st.name} - ${st.description}`, value: st.id }))}
+                      />
+                      <Typography.Text type="secondary" style={{ display: "block", marginTop: 8, fontSize: 12 }}>
+                        登录成功！选择内容类型后点击下方「保存信息源」即可完成创建。
+                      </Typography.Text>
+                    </div>
                   )}
                 </div>
               )}
@@ -1032,8 +1063,67 @@ export function SourcesPage({ session }: SourcesPageProps) {
             </Empty>
           </Card>
         ) : (
-          <div className="source-cards-grid">
-            {sourcesQuery.data!.map((source) => (
+          <>
+            {sourcesQuery.data!.some(s => s.plugin_id) && (
+              <>
+                <Typography.Title level={5} style={{ margin: "16px 0 8px" }}>
+                  <ScanOutlined style={{ marginRight: 8 }} />
+                  扫码订阅源
+                </Typography.Title>
+                <div className="source-cards-grid">
+                  {sourcesQuery.data!.filter(s => s.plugin_id).map((source) => (
+                    <Card
+                      key={source.id}
+                      className={`source-card ${editingSourceId === source.id ? "source-card-editing" : ""}`}
+                      styles={{ body: { padding: 16 } }}
+                      onClick={() => {
+                        if (!editingSourceId) handleStartEdit(source);
+                      }}
+                    >
+                      <div className="source-card-header">
+                        <div className="source-card-title-row">
+                          <Space size={8}>
+                            {source.plugin_name}
+                            {source.plugin_user_info?.username && (
+                              <Tag color="blue" style={{ margin: 0 }}>
+                                {source.plugin_user_info.username}
+                              </Tag>
+                            )}
+                          </Space>
+                        </div>
+                        <div className="source-card-meta">
+                          <Tag icon={<ScanOutlined />} color="blue">{source.plugin_name || "插件"}</Tag>
+                        </div>
+                        <div className="source-card-endpoint" style={{ fontSize: 12, color: "var(--ant-color-text-secondary)", marginTop: 4 }}>
+                          {source.endpoint}
+                        </div>
+                      </div>
+                      <Divider style={{ margin: "12px 0" }} />
+                      <div className="source-card-actions">
+                        <Button size="small" icon={<SyncOutlined />} loading={fetchingSourceId === source.id} onClick={() => { setFetchingSourceId(source.id); fetchMutation.mutate(source.id); }}>
+                          {t("sources.fetchNow")}
+                        </Button>
+                        <Button size="small" icon={<EditOutlined />} onClick={() => handleStartEdit(source)}>
+                          {t("sources.edit")}
+                        </Button>
+                        <Button size="small" danger icon={<DeleteOutlined />} loading={deletingSourceId === source.id} onClick={() => { setDeletingSourceId(source.id); deleteMutation.mutate(source.id); }}>
+                          {t("sources.delete")}
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {sourcesQuery.data!.some(s => !s.plugin_id) && (
+              <>
+                <Typography.Title level={5} style={{ margin: "16px 0 8px" }}>
+                  <ApiOutlined style={{ marginRight: 8 }} />
+                  RSS / API 信息源
+                </Typography.Title>
+                <div className="source-cards-grid">
+                  {sourcesQuery.data!.filter(s => !s.plugin_id).map((source) => (
               <Card
                 key={source.id}
                 className={`source-card ${editingSourceId === source.id ? "source-card-editing" : ""}`}
@@ -1172,7 +1262,10 @@ export function SourcesPage({ session }: SourcesPageProps) {
                 </div>
               </Card>
             ))}
-          </div>
+                </div>
+              </>
+            )}
+          </>
         )}
 
         {/* ── Fetch Logs ── */}
@@ -1241,7 +1334,18 @@ export function SourcesPage({ session }: SourcesPageProps) {
           onSuccess={(credentials, userInfo) => {
             setShowQRCodeModal(false);
             setPluginCredentials(credentials || null);
-            messageApi.success(userInfo?.username ? `登录成功：${userInfo.username}` : "登录成功！");
+            setPluginUserInfo(userInfo || null);
+            const pluginName = userInfo?.username || selectedPluginId;
+            form.setFieldsValue({
+              name: `${pluginName}的订阅`,
+              type: "api",
+              endpoint: "https://api.bilibili.com",
+              auth: {
+                auth_type: "qrcode",
+                plugin_id: selectedPluginId,
+              },
+            });
+            messageApi.success(userInfo?.username ? `登录成功：${userInfo.username}` : "登录成功！请选择内容类型并保存");
           }}
           onError={(error) => {
             messageApi.error(error);
