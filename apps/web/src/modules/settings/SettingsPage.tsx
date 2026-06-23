@@ -1,5 +1,4 @@
 import {
-  CheckOutlined,
   GlobalOutlined,
   MoonOutlined,
   SunOutlined,
@@ -58,8 +57,8 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
       if (i18n.language !== pref.language) {
         await i18n.changeLanguage(pref.language);
       }
-    } catch (e) {
-      message.error(`加载偏好失败: ${e}`);
+    } catch (err) {
+      message.error(`加载偏好失败: ${err}`);
     } finally {
       setLoading(false);
     }
@@ -76,7 +75,7 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
       await i18n.changeLanguage(lang);
       message.success(t("settings.saveSuccess"));
       onPreferenceChange?.(pref);
-    } catch (e) {
+    } catch {
       message.error(t("settings.saveFailed"));
     }
   };
@@ -87,7 +86,7 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
       setPreference(pref);
       message.success(t("settings.saveSuccess"));
       onPreferenceChange?.(pref);
-    } catch (e) {
+    } catch {
       message.error(t("settings.saveFailed"));
     }
   };
@@ -98,19 +97,15 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
       setPreference(pref);
       message.success(t("settings.saveSuccess"));
       onPreferenceChange?.(pref);
-    } catch (e) {
+    } catch {
       message.error(t("settings.saveFailed"));
     }
   };
 
   const handleUploadChange = async (info: UploadChangeParam) => {
     const { file } = info;
-    if (file.status === "uploading") {
-      return;
-    }
-    if (file.status === "done") {
-      message.success("背景图已上传");
-    }
+    if (file.status === "uploading") return;
+    if (file.status === "done") message.success("背景图已上传");
   };
 
   const customUpload = async (options: UploadRequestOption) => {
@@ -133,7 +128,7 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
       setPreference(pref);
       onPreferenceChange?.(pref);
       message.success("已恢复默认背景");
-    } catch (e) {
+    } catch {
       message.error(t("settings.saveFailed"));
     }
   };
@@ -150,127 +145,86 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
     <div className="settings-page">
       <div className="source-section-header">
         <div>
-          <Typography.Title level={4} style={{ marginBottom: 4 }}>
+          <Title level={4} style={{ marginBottom: 4 }}>
             <Space>
               <SettingOutlined />
               {t("settings.title")}
             </Space>
-          </Typography.Title>
-          <Typography.Text type="secondary">{t("settings.subtitle")}</Typography.Text>
+          </Title>
+          <Text type="secondary">{t("settings.subtitle")}</Text>
         </div>
       </div>
 
       <Row gutter={[24, 24]}>
-        <Col xs={24} md={12}>
+        {/* Appearance */}
+        <Col xs={24} lg={12}>
           <Card
             title={
               <Space>
                 <GlobalOutlined />
-                {t("settings.language")}
+                外观与语言
               </Space>
             }
             styles={{ body: { padding: "20px 24px" } }}
             style={{ borderRadius: "var(--radius-md)", height: "100%" }}
           >
-            <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
-              {t("settings.languageDesc")}
-            </Text>
-            <Segmented
-              block
-              value={preference.language}
-              onChange={(value) => handleLanguageChange(value as Language)}
-              options={[
-                {
-                  label: (
-                    <Space>
-                      <span>🇨🇳</span>
-                      <span>{t("settings.chineseSimplified")}</span>
-                      {preference.language === "zh-CN" && <CheckOutlined />}
-                    </Space>
-                  ),
-                  value: "zh-CN",
-                },
-                {
-                  label: (
-                    <Space>
-                      <span>🇺🇸</span>
-                      <span>English</span>
-                      {preference.language === "en-US" && <CheckOutlined />}
-                    </Space>
-                  ),
-                  value: "en-US",
-                },
-              ]}
-            />
+            <Space direction="vertical" size={24} style={{ width: "100%" }}>
+              <div>
+                <Text strong style={{ display: "block", marginBottom: 8 }}>
+                  {t("settings.language")}
+                </Text>
+                <Text type="secondary" style={{ display: "block", marginBottom: 12, fontSize: 13 }}>
+                  {t("settings.languageDesc")}
+                </Text>
+                <Segmented
+                  block
+                  value={preference.language}
+                  onChange={(value) => handleLanguageChange(value as Language)}
+                  options={[
+                    { label: <Space><span>🇨🇳</span><span>{t("settings.chineseSimplified")}</span></Space>, value: "zh-CN" },
+                    { label: <Space><span>🇺🇸</span><span>English</span></Space>, value: "en-US" },
+                  ]}
+                />
+              </div>
+
+              <div>
+                <Text strong style={{ display: "block", marginBottom: 8 }}>
+                  {t("settings.theme")}
+                </Text>
+                <Text type="secondary" style={{ display: "block", marginBottom: 12, fontSize: 13 }}>
+                  {t("settings.themeDesc")}
+                </Text>
+                <Segmented
+                  block
+                  value={preference.theme}
+                  onChange={(value) => handleThemeChange(value as Theme)}
+                  options={[
+                    { label: <Space><SunOutlined /><span>{t("settings.themeLight")}</span></Space>, value: "light" },
+                    { label: <Space><MoonOutlined /><span>{t("settings.themeDark")}</span></Space>, value: "dark" },
+                    { label: <Space><DesktopOutlined /><span>{t("settings.themeSystem")}</span></Space>, value: "system" },
+                  ]}
+                />
+              </div>
+            </Space>
           </Card>
         </Col>
 
-        <Col xs={24} md={12}>
-          <Card
-            title={
-              <Space>
-                <SunOutlined />
-                {t("settings.theme")}
-              </Space>
-            }
-            styles={{ body: { padding: "20px 24px" } }}
-            style={{ borderRadius: "var(--radius-md)", height: "100%" }}
-          >
-            <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
-              {t("settings.themeDesc")}
-            </Text>
-            <Segmented
-              block
-              value={preference.theme}
-              onChange={(value) => handleThemeChange(value as Theme)}
-              options={[
-                {
-                  label: (
-                    <Space>
-                      <SunOutlined />
-                      <span>{t("settings.themeLight")}</span>
-                      {preference.theme === "light" && <CheckOutlined />}
-                    </Space>
-                  ),
-                  value: "light",
-                },
-                {
-                  label: (
-                    <Space>
-                      <MoonOutlined />
-                      <span>{t("settings.themeDark")}</span>
-                      {preference.theme === "dark" && <CheckOutlined />}
-                    </Space>
-                  ),
-                  value: "dark",
-                },
-                {
-                  label: (
-                    <Space>
-                      <DesktopOutlined />
-                      <span>{t("settings.themeSystem")}</span>
-                      {preference.theme === "system" && <CheckOutlined />}
-                    </Space>
-                  ),
-                  value: "system",
-                },
-              ]}
-            />
-          </Card>
-        </Col>
-
-        <Col xs={24} md={12}>
+        {/* Feed */}
+        <Col xs={24} lg={12}>
           <Card
             title={
               <Space>
                 <AppstoreOutlined />
-                {t("settings.defaultView")}
+                信息流
               </Space>
             }
             styles={{ body: { padding: "20px 24px" } }}
             style={{ borderRadius: "var(--radius-md)", height: "100%" }}
           >
-            <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
+            <Text strong style={{ display: "block", marginBottom: 8 }}>
+              {t("settings.defaultView")}
+            </Text>
+            <Text type="secondary" style={{ display: "block", marginBottom: 16, fontSize: 13 }}>
               {t("settings.defaultViewDesc")}
             </Text>
             <Segmented
@@ -278,42 +232,16 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
               value={preference.default_view}
               onChange={(value) => handleViewChange(value as DefaultView)}
               options={[
-                {
-                  label: (
-                    <Space>
-                      <UnorderedListOutlined />
-                      <span>{t("settings.viewList")}</span>
-                      {preference.default_view === "list" && <CheckOutlined />}
-                    </Space>
-                  ),
-                  value: "list",
-                },
-                {
-                  label: (
-                    <Space>
-                      <AppstoreOutlined />
-                      <span>{t("settings.viewGrid")}</span>
-                      {preference.default_view === "grid" && <CheckOutlined />}
-                    </Space>
-                  ),
-                  value: "grid",
-                },
-                {
-                  label: (
-                    <Space>
-                      <CompressOutlined />
-                      <span>{t("settings.viewCompact")}</span>
-                      {preference.default_view === "compact" && <CheckOutlined />}
-                    </Space>
-                  ),
-                  value: "compact",
-                },
+                { label: <Space><UnorderedListOutlined /><span>{t("settings.viewList")}</span></Space>, value: "list" },
+                { label: <Space><AppstoreOutlined /><span>{t("settings.viewGrid")}</span></Space>, value: "grid" },
+                { label: <Space><CompressOutlined /><span>{t("settings.viewCompact")}</span></Space>, value: "compact" },
               ]}
             />
           </Card>
         </Col>
 
-        <Col xs={24} md={12}>
+        {/* Login background */}
+        <Col xs={24}>
           <Card
             title={
               <Space>
@@ -322,7 +250,7 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
               </Space>
             }
             styles={{ body: { padding: "20px 24px" } }}
-            style={{ borderRadius: "var(--radius-md)", height: "100%" }}
+            style={{ borderRadius: "var(--radius-md)" }}
           >
             <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
               自定义登录页背景图，留空则使用默认渐变。
@@ -332,7 +260,7 @@ export function SettingsPage({ session, onPreferenceChange }: Props) {
                 <div
                   style={{
                     width: "100%",
-                    height: 100,
+                    height: 160,
                     borderRadius: 8,
                     backgroundImage: `url(${import.meta.env.VITE_API_BASE_URL ?? ""}${preference.login_background_url})`,
                     backgroundSize: "cover",

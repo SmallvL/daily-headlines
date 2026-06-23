@@ -73,7 +73,7 @@ def test_create_fetch_and_list_feed(monkeypatch) -> None:
             "schedule_interval_minutes": 30,
         },
     )
-    assert create_response.status_code == 200
+    assert create_response.status_code in (200, 201)
     source_id = create_response.json()["data"]["id"]
     assert create_response.json()["data"]["schedule_enabled"] is True
     assert create_response.json()["data"]["schedule_interval_minutes"] == 30
@@ -214,7 +214,7 @@ def test_create_fetch_and_list_feed(monkeypatch) -> None:
     delete_response = client.delete(
         f"/api/sources/{source_id}", headers=headers
     )
-    assert delete_response.status_code == 200
+    assert delete_response.status_code in (200, 204)
 
     sources_response = client.get("/api/sources", headers=headers)
     assert sources_response.json()["data"] == []

@@ -1,11 +1,14 @@
 """Bilibili content parser module."""
 from __future__ import annotations
 
+import logging
 import re
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from app.plugins.base import FeedItem, ParseResult
+
+logger = logging.getLogger(__name__)
 
 
 class BilibiliParser:
@@ -31,10 +34,14 @@ class BilibiliParser:
             author = author_module.get("name", "Unknown")
             avatar = author_module.get("face", "")
             
-            # Timestamp
+            # Timestamp — B站 may return pub_ts as int or string
             timestamp = author_module.get("pub_ts", 0)
+            try:
+                timestamp = int(timestamp) if timestamp else 0
+            except (TypeError, ValueError):
+                timestamp = 0
             published_at = datetime.fromtimestamp(
-                timestamp, 
+                timestamp,
                 tz=timezone.utc
             ).isoformat() if timestamp else None
             
@@ -55,24 +62,32 @@ class BilibiliParser:
             
             if dynamic_type == "DYNAMIC_TYPE_AV":
                 # Video dynamic
-                archive = major.get("archive", {})
+                archive = major.get("archive") or {}
                 title = archive.get("title", "")
                 content = archive.get("desc", content)
                 image_url = archive.get("cover", "")
                 bvid = archive.get("bvid", "")
                 if bvid:
-                    url = f"https://www.bilibili.com/video/{bvid}"
+                    # Prefer bangumi/ep URL if available (for 番剧 episodes)
+                    jump_url = archive.get("jump_url", "")
+                    if jump_url and "bangumi" in jump_url:
+                        url = jump_url if jump_url.startswith("http") else ("https:" + jump_url if jump_url.startswith("//") else f"https://www.bilibili.com{jump_url}")
+                    else:
+                        url = f"https://www.bilibili.com/video/{bvid}"
                     extra["bvid"] = bvid
                 extra["duration"] = archive.get("duration_text", "")
                 extra["play_count"] = archive.get("stat", {}).get("play", 0)
                 
             elif dynamic_type == "DYNAMIC_TYPE_DRAW":
                 # Image dynamic
-                draw = major.get("draw", {})
-                items = draw.get("items", [])
-                if items:
-                    image_url = items[0].get("src", "")
-                extra["image_count"] = len(items)
+                draw = major.get("draw") or {}
+                draw_items = draw.get("items", []) if isinstance(draw, dict) else []
+                if draw_items:
+                    image_url = draw_items[0].get("src", "")
+                # Use desc text as title for image dynamics
+                if not title and content:
+                    title = content[:50] + ("..." if len(content) > 50 else "")
+                extra["image_count"] = len(draw_items)
                 
             elif dynamic_type == "DYNAMIC_TYPE_WORD":
                 # Text dynamic
@@ -88,20 +103,70 @@ class BilibiliParser:
                 image_url = article.get("image_urls", [None])[0] if article.get("image_urls") else None
                 url = f"https://www.bilibili.com/read/cv{article.get('id', '')}"
                 
-            elif dynamic_type == "DYNAMIC_TYPE_LIVE":
+            elif dynamic_type == "DYNAMIC_TYPE_LIVE" or dynamic_type == "DYNAMIC_TYPE_LIVE_RCMD":
                 # Live room
-                live = major.get("live", {})
+                live = major.get("live", {}) or major.get("live_rcmd", {})
                 title = f"[直播] {live.get('title', '')}"
                 image_url = live.get("cover", "")
                 extra["live_status"] = live.get("status", 0)
-                
+
+            elif dynamic_type == "DYNAMIC_TYPE_FORWARD":
+                # Forwarded dynamic — use desc as title, try to fetch original
+                if content:
+                    title = content[:50] + ("..." if len(content) > 50 else "")
+                orig = item.get("orig", {})
+                if orig:
+                    orig_modules = orig.get("modules", {})
+                    orig_major = orig_modules.get("module_dynamic", {}).get("major", {})
+                    orig_archive = orig_major.get("archive", {})
+                    if orig_archive:
+                        title = title or f"[转发] {orig_archive.get('title', '')}"
+                        image_url = orig_archive.get("cover", "")
+
+            elif dynamic_type == "DYNAMIC_TYPE_PGC" or dynamic_type == "DYNAMIC_TYPE_PGC_UNION":
+                # 番剧/影视
+                pgc = major.get("pgc", {}) or major.get("pgc_union", {})
+                title = pgc.get("title", "")
+                content = pgc.get("text1", content)
+                image_url = pgc.get("cover", "")
+                if pgc.get("jump_url"):
+                    url = pgc["jump_url"]
+                    if url.startswith("//"):
+                        url = "https:" + url
+
+            elif dynamic_type == "DYNAMIC_TYPE_COMMON_SQUARE" or dynamic_type == "DYNAMIC_TYPE_COMMON_VERTICAL":
+                # Generic content card
+                common = major.get("common", {})
+                title = common.get("title", "")
+                content = common.get("desc", content)
+                image_url = common.get("cover", "")
+                if common.get("jump_url"):
+                    url = common["jump_url"]
+                    if url.startswith("//"):
+                        url = "https:" + url
+
+            elif dynamic_type == "DYNAMIC_TYPE_MUSIC":
+                # 音频
+                music = major.get("music", {})
+                title = music.get("title", "")
+                image_url = music.get("cover", "")
+
             else:
-                # Unknown type, skip
-                return None
-            
+                # Unknown type — preserve as text dynamic with raw type info
+                if content:
+                    title = content[:50] + ("..." if len(content) > 50 else "")
+                else:
+                    title = f"[{dynamic_type}] {dynamic_id}"
+
             if not title:
                 title = f"动态 {dynamic_id}"
-            
+
+            # Upgrade http:// to https:// to avoid mixed-content warnings
+            if image_url and isinstance(image_url, str) and image_url.startswith("http://"):
+                image_url = "https://" + image_url[len("http://"):]
+            if url and url.startswith("http://"):
+                url = "https://" + url[len("http://"):]
+
             return FeedItem(
                 title=title,
                 url=url,
@@ -116,6 +181,7 @@ class BilibiliParser:
             )
             
         except Exception as e:
+            logger.exception("Failed to parse Bilibili dynamic: %s", e)
             return None
     
     @staticmethod

@@ -1,5 +1,13 @@
 """Shared test fixtures."""
 
+import os
+
+# Set test environment variables BEFORE any app imports so that
+# the frozen Settings dataclass picks up the correct values.
+os.environ.setdefault("DEV_ADMIN_PASSWORD", "admin123")
+os.environ.setdefault("JWT_SECRET", "test-jwt-secret-for-testing-only")
+os.environ.setdefault("DATABASE_URL", "sqlite:///./test_daily_headlines.db")
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

@@ -100,10 +100,10 @@ cp .env.example .env
 # 编辑 .env 设置你的密码和密钥
 
 # 启动
-uvicorn app.main:app --reload --port 8015
+uvicorn app.main:app --reload --port 8017
 ```
 
-后端启动后访问 http://localhost:8015/docs 查看 API 文档。
+后端启动后访问 http://localhost:8017/docs 查看 API 文档。
 
 ### 3. 启动前端
 
@@ -227,10 +227,8 @@ pytest tests/ -v
 ## 📄 文档
 
 - [软件设计](docs/SOFTWARE_DESIGN.md) — 架构设计与技术选型
-- [开发计划](docs/DEVELOPMENT_PLAN.md) — 版本规划与进度
-- [进度看板](docs/PROGRESS_BOARD.md) — 开发进度跟踪
-- [数据管理方案](docs/DATA_MANAGEMENT_PLAN.md) — 数据保留与清理策略
 - [部署指南](docs/DEPLOYMENT.md) — Docker / 手动部署
+- [插件开发模板](docs/sources/plugin-template.md) — 自定义插件示例
 
 ---
 

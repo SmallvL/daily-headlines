@@ -2,6 +2,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   ExperimentOutlined,
+  InfoCircleOutlined,
   PlusOutlined,
   RocketOutlined,
   RobotOutlined,
@@ -17,12 +18,14 @@ import {
   Modal,
   Popconfirm,
   Row,
+  Segmented,
   Select,
   Space,
   Steps,
   Switch,
   Table,
   Tag,
+  Tooltip,
   Typography,
   message,
 } from "antd";
@@ -32,7 +35,6 @@ import { useTranslation } from "react-i18next";
 import { AuthSession } from "../../shared/api/auth";
 import {
   AgentDraft,
-  ApiFormat,
   LlmProvider,
   LlmProviderCreate,
   SourceDraft,
@@ -612,58 +614,96 @@ export function AgentPage({ session, onCreateSource }: Props) {
 
       {/* ── Provider modal ── */}
       <Modal
-        title="添加 LLM Provider"
+        title={
+          <Space>
+            <PlusOutlined />
+            {t("agent.addProvider")}
+          </Space>
+        }
         open={providerModalOpen}
         onOk={handleCreateProvider}
         onCancel={() => {
           setProviderModalOpen(false);
           providerForm.resetFields();
         }}
-        okText="创建"
-        cancelText="取消"
+        okText={t("common.create")}
+        cancelText={t("common.cancel")}
+        width={520}
       >
         <Form form={providerForm} layout="vertical" initialValues={{ api_format: "openai", is_default: false }}>
+          <Alert
+            message="Provider 用于调用大模型生成信息源配置。支持 OpenAI 兼容格式与 Anthropic 格式。"
+            type="info"
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+
           <Form.Item
             name="name"
-            label="名称"
+            label={t("agent.providerName")}
             rules={[{ required: true, message: "请输入名称" }]}
           >
-            <Input placeholder="如：MiMo、DeepSeek、Claude" />
+            <Input placeholder="如：DeepSeek、OpenAI、Claude" />
           </Form.Item>
+
           <Form.Item
             name="api_format"
-            label="API 格式"
+            label={
+              <Space>
+                {t("agent.apiFormat")}
+                <Tooltip title="OpenAI 兼容格式适用于绝大多数国内代理；Anthropic 格式用于 Claude 官方 API。">
+                  <InfoCircleOutlined style={{ color: "var(--ant-color-text-tertiary)" }} />
+                </Tooltip>
+              </Space>
+            }
             rules={[{ required: true }]}
           >
-            <Select
+            <Segmented
+              block
               options={[
-                { value: "openai", label: "OpenAI 兼容 (/v1/chat/completions)" },
-                { value: "anthropic", label: "Anthropic (/v1/messages)" },
+                { label: t("agent.openaiFormat"), value: "openai" },
+                { label: t("agent.anthropicFormat"), value: "anthropic" },
               ]}
             />
           </Form.Item>
-          <Form.Item
-            name="base_url"
-            label="Base URL"
-            rules={[{ required: true, message: "请输入 Base URL" }]}
-          >
-            <Input placeholder="如：https://api.deepseek.com/v1" />
-          </Form.Item>
-          <Form.Item
-            name="api_key"
-            label="API Key"
-            rules={[{ required: true, message: "请输入 API Key" }]}
-          >
-            <Input.Password placeholder="sk-..." />
-          </Form.Item>
+
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="base_url"
+                label={t("agent.baseUrl")}
+                rules={[{ required: true, message: "请输入 Base URL" }]}
+              >
+                <Input placeholder="https://api.deepseek.com/v1" />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item
+                name="api_key"
+                label={t("agent.apiKey")}
+                rules={[{ required: true, message: "请输入 API Key" }]}
+              >
+                <Input.Password placeholder="sk-..." />
+              </Form.Item>
+            </Col>
+          </Row>
+
           <Form.Item
             name="model"
-            label="模型"
+            label={
+              <Space>
+                {t("agent.modelName")}
+                <Tooltip title="填写模型 ID，如 deepseek-chat、gpt-4o、claude-3-5-sonnet-20241022。">
+                  <InfoCircleOutlined style={{ color: "var(--ant-color-text-tertiary)" }} />
+                </Tooltip>
+              </Space>
+            }
             rules={[{ required: true, message: "请输入模型名称" }]}
           >
-            <Input placeholder="如：deepseek-chat、mimo-v2.5" />
+            <Input placeholder="deepseek-chat" />
           </Form.Item>
-          <Form.Item name="is_default" label="设为默认">
+
+          <Form.Item name="is_default" label={t("agent.makeDefault")} valuePropName="checked">
             <Switch />
           </Form.Item>
         </Form>

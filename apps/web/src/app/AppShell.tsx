@@ -14,7 +14,8 @@ import {
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, Space, Switch, Typography, theme } from "antd";
+import { Button, Layout, Menu, Space, Tooltip, Typography, theme } from "antd";
+import type { MenuProps } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -93,21 +94,55 @@ export function AppShell({
   );
   const pageTitle = currentMeta ? t(currentMeta[1].i18nKey) : t("common.appName");
 
-  const menuItems = [
-    { key: "dashboard", icon: <DashboardOutlined />, label: t("nav.feed") },
-    { key: "sources", icon: <ApiOutlined />, label: t("nav.sources") },
-    { key: "fetch-logs", icon: <FileTextOutlined />, label: t("nav.taskLogs") },
-    { key: "agent", icon: <RobotOutlined />, label: t("nav.aiAgent") },
-    { key: "agent-tokens", icon: <KeyOutlined />, label: "Agent Token" },
-    { key: "settings", icon: <SettingOutlined />, label: t("nav.settings") },
+  const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+    const path = keyToPath[key];
+    if (path) navigate(path);
+  };
+
+  const menuItems: MenuProps["items"] = [
+    {
+      type: "group",
+      label: <Typography.Text type="secondary" style={{ fontSize: 12 }}>{t("nav.groupMain")}</Typography.Text>,
+      children: [
+        { key: "dashboard", icon: <DashboardOutlined />, label: t("nav.feed") },
+      ],
+    },
+    {
+      type: "group",
+      label: <Typography.Text type="secondary" style={{ fontSize: 12 }}>{t("nav.groupSources")}</Typography.Text>,
+      children: [
+        { key: "sources", icon: <ApiOutlined />, label: t("nav.sources") },
+        { key: "fetch-logs", icon: <FileTextOutlined />, label: t("nav.taskLogs") },
+      ],
+    },
+    {
+      type: "group",
+      label: <Typography.Text type="secondary" style={{ fontSize: 12 }}>{t("nav.groupAi")}</Typography.Text>,
+      children: [
+        { key: "agent", icon: <RobotOutlined />, label: t("nav.aiAgent") },
+        { key: "agent-tokens", icon: <KeyOutlined />, label: t("nav.agentTokens") },
+      ],
+    },
+    {
+      type: "group",
+      label: <Typography.Text type="secondary" style={{ fontSize: 12 }}>{t("nav.groupSettings")}</Typography.Text>,
+      children: [
+        { key: "settings", icon: <SettingOutlined />, label: t("nav.settings") },
+      ],
+    },
     ...(isAdmin
       ? [
-          { type: "divider" as const },
-          { key: "admin-users", icon: <UserOutlined />, label: t("nav.userManagement") },
-          { key: "admin-groups", icon: <TeamOutlined />, label: t("nav.groupManagement") },
-          { key: "admin-templates", icon: <SafetyOutlined />, label: t("nav.publicTemplates") },
-          { key: "admin-audit", icon: <AuditOutlined />, label: t("nav.auditLogs") },
-          { key: "data-mgmt", icon: <DatabaseOutlined />, label: "数据管理" },
+          {
+            type: "group" as const,
+            label: <Typography.Text type="secondary" style={{ fontSize: 12 }}>{t("nav.groupAdmin")}</Typography.Text>,
+            children: [
+              { key: "admin-users", icon: <UserOutlined />, label: t("nav.userManagement") },
+              { key: "admin-groups", icon: <TeamOutlined />, label: t("nav.groupManagement") },
+              { key: "admin-templates", icon: <SafetyOutlined />, label: t("nav.publicTemplates") },
+              { key: "admin-audit", icon: <AuditOutlined />, label: t("nav.auditLogs") },
+              { key: "data-mgmt", icon: <DatabaseOutlined />, label: t("nav.dataManagement") },
+            ],
+          },
         ]
       : []),
   ];
@@ -119,9 +154,10 @@ export function AppShell({
         breakpoint="lg"
         collapsedWidth={72}
         theme={siderTheme}
+        className={`app-sider ${isDarkMode ? "app-sider-dark" : ""}`}
         style={{
-          background: token.colorBgContainer,
-          borderInlineEnd: `1px solid ${token.colorBorderSecondary}`,
+          background: isDarkMode ? "#0d1117" : token.colorBgContainer,
+          borderInlineEnd: `1px solid ${isDarkMode ? "#1f2937" : token.colorBorderSecondary}`,
         }}
       >
         <div className="brand">
@@ -134,11 +170,9 @@ export function AppShell({
           theme={siderTheme}
           mode="inline"
           selectedKeys={[selectedKey]}
-          onClick={({ key }) => {
-            const path = keyToPath[key];
-            if (path) navigate(path);
-          }}
+          onClick={handleMenuClick}
           items={menuItems}
+          style={{ padding: "0 8px" }}
         />
       </Sider>
       <Layout>
@@ -147,13 +181,21 @@ export function AppShell({
             {pageTitle}
           </Typography.Title>
           <Space>
-            <Switch
-              checked={isDarkMode}
-              checkedChildren={<MoonOutlined />}
-              unCheckedChildren={<SunOutlined />}
-              onChange={onThemeChange}
-              aria-label={t("settings.theme")}
-            />
+            <Tooltip title={isDarkMode ? "切换到浅色模式" : "切换到深色模式"}>
+              <Button
+                type="text"
+                shape="circle"
+                size="large"
+                icon={
+                  isDarkMode
+                    ? <SunOutlined style={{ fontSize: 18, color: "#fbbf24" }} />
+                    : <MoonOutlined style={{ fontSize: 18, color: "#6366f1" }} />
+                }
+                onClick={() => onThemeChange(!isDarkMode)}
+                aria-label={t("settings.theme")}
+                className="theme-toggle-btn"
+              />
+            </Tooltip>
             <Button icon={<LogoutOutlined />} onClick={onLogout}>
               {t("common.logout")}
             </Button>

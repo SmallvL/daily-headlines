@@ -165,14 +165,18 @@ class BilibiliPlugin(SourcePlugin):
         fetch_type = (config or {}).get("fetch_type", "dynamic")
         
         try:
+            headers = self.get_headers(credentials)
+            headers["Referer"] = "https://www.bilibili.com/"
             async with httpx.AsyncClient(
-                headers=self.get_headers(credentials),
+                headers=headers,
                 cookies=credentials.get("cookies", {}),
                 timeout=30.0
             ) as client:
                 if fetch_type == "dynamic":
-                    # Fetch user dynamics
+                    # Fetch user's followed dynamics (feed/all)
                     params = {
+                        "timezone_offset": -480,
+                        "type": "all",
                         "offset": cursor or "",
                         "features": "itemOpusStyle,listOnlyfans,opusBigCover,onlyfansVote,decorationCard,onlyfansAssetsV2,forwardListHidden,ugcDelete",
                     }
@@ -181,13 +185,13 @@ class BilibiliPlugin(SourcePlugin):
                         params=params
                     )
                     data = response.json()
-                    
+
                     if data.get("code") != 0:
                         return ParseResult(
                             success=False,
                             error=data.get("message", "获取动态失败")
                         )
-                    
+
                     return BilibiliParser.parse_dynamics_response(data.get("data", {}))
                 
                 elif fetch_type == "feed":

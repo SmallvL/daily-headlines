@@ -86,6 +86,7 @@ class SourceRead(BaseModel):
     plugin_id: str | None = None
     plugin_name: str | None = None
     plugin_user_info: dict | None = None
+    plugin_has_credentials: bool = False
 
 
 class SourceFetchLogRead(BaseModel):

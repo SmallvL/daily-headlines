@@ -120,13 +120,24 @@ class SourceService:
             existing_config.update(payload.config)
             source.config_json = json.dumps(existing_config, ensure_ascii=False)
         if payload.auth is not None:
-            # Update auth config
+            # Update auth config — merge with existing to preserve stored credentials
             existing_config = json.loads(source.config_json or "{}")
+            existing_auth = existing_config.get("auth", {})
+            existing_auth_config = existing_auth.get("auth_config", {})
+
             auth_data = prepare_auth_for_storage(
                 payload.auth.auth_type,
                 payload.auth.model_dump(exclude={"auth_type"})
             )
-            existing_config["auth"] = auth_data
+            new_auth_config = auth_data.get("auth_config", {})
+
+            # Preserve stored plugin_credentials when client doesn't provide them
+            if not new_auth_config.get("plugin_credentials") and existing_auth_config.get("plugin_credentials"):
+                new_auth_config["plugin_credentials"] = existing_auth_config["plugin_credentials"]
+            if not new_auth_config.get("plugin_config") and existing_auth_config.get("plugin_config"):
+                new_auth_config["plugin_config"] = existing_auth_config["plugin_config"]
+
+            existing_config["auth"] = {"auth_type": auth_data.get("auth_type", "none"), "auth_config": new_auth_config}
             source.config_json = json.dumps(existing_config, ensure_ascii=False)
         source.updated_at = datetime.now(timezone.utc)
         db.commit()
@@ -148,6 +159,35 @@ class SourceService:
         config["auth"] = auth_data
         extra_headers = build_auth_headers(payload.auth.auth_type, auth_config)
 
+        # Extract plugin info for plugin-based auth
+        plugin_id = auth_config.get("plugin_id")
+        plugin_credentials = auth_config.get("plugin_credentials")
+        plugin_config = auth_config.get("plugin_config")
+
+        # If plugin_id is set but credentials are null, look up stored credentials
+        # from an existing source belonging to the current user
+        if plugin_id and not plugin_credentials:
+            existing_sources = self.list_sources(db, current_user)
+            for src in existing_sources:
+                if src.plugin_id == plugin_id and src.plugin_has_credentials:
+                    src_config = json.loads(
+                        db.scalars(
+                            select(Source).where(Source.id == src.id)
+                        ).first().config_json or "{}"
+                    )
+                    stored_auth = src_config.get("auth", {}).get("auth_config", {})
+                    if stored_auth.get("plugin_credentials"):
+                        plugin_credentials = stored_auth["plugin_credentials"]
+                        plugin_config = plugin_config or stored_auth.get("plugin_config")
+                        break
+
+        # If still no credentials after lookup, fail with a clear message
+        if plugin_id and not plugin_credentials:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"插件 {plugin_id} 的认证凭证缺失，请扫码登录后再测试",
+            )
+
         # Run the fetch
         title, items = await self._fetch_source_items(
             source_id="test",
@@ -156,6 +196,9 @@ class SourceService:
             config=config,
             limit=5,
             extra_headers=extra_headers,
+            plugin_id=plugin_id,
+            plugin_credentials=plugin_credentials,
+            plugin_config=plugin_config,
         )
 
         return SourceTestResult(
@@ -274,6 +317,7 @@ class SourceService:
 
             source.last_fetch_at = datetime.now(timezone.utc)
             source.next_fetch_at = self._next_fetch_at_from_source(source)
+            source.status = "active"
             log.status = "success"
             log.inserted_count = inserted
             log.skipped_count = skipped
@@ -283,6 +327,7 @@ class SourceService:
                 log_id=log.id, inserted=inserted, skipped=skipped, items=inserted_items
             )
         except Exception as exc:
+            source.status = "error"
             log.status = "failed"
             log.error_message = str(exc)
             log.finished_at = datetime.now(timezone.utc)
@@ -317,23 +362,31 @@ class SourceService:
                     limit=limit
                 )
                 if result.success:
-                    # Convert plugin feed items to FeedItemRead format
+                    # Convert plugin feed items to FeedItemCreate format (for storage)
+                    from app.modules.feed.schemas import FeedItemCreate
                     items = []
                     for item_data in result.items:
-                        items.append(FeedItemRead(
-                            id=f"item_{uuid4().hex}",
+                        # Parse published_at if it's an ISO string
+                        pub = item_data.get("published_at")
+                        if isinstance(pub, str) and pub:
+                            try:
+                                pub = datetime.fromisoformat(pub.replace("Z", "+00:00"))
+                            except (ValueError, TypeError):
+                                pub = None
+                        elif not isinstance(pub, datetime):
+                            pub = None
+                        items.append(FeedItemCreate(
                             source_id=source_id,
-                            external_id=item_data.get("source_id", ""),
+                            external_id=item_data.get("source_id") or None,
                             title=item_data.get("title", ""),
                             summary=item_data.get("summary"),
                             content_md=item_data.get("content"),
-                            url=item_data.get("url", ""),
+                            url=item_data.get("url"),
                             image_url=item_data.get("image_url"),
                             author=item_data.get("author"),
                             language=None,
-                            published_at=item_data.get("published_at"),
-                            raw_json=item_data,
-                            created_at=datetime.now(timezone.utc),
+                            published_at=pub,
+                            raw_json=item_data.get("extra") or {},
                         ))
                     return (None, items)
                 else:
@@ -341,6 +394,14 @@ class SourceService:
                         status_code=status.HTTP_400_BAD_REQUEST,
                         detail=result.error or "Plugin fetch failed"
                     )
+
+        # If plugin_id is set but credentials are missing, surface a clear error
+        # instead of falling through to api_connector with a plugin.local URL
+        if plugin_id and not plugin_credentials:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"插件 {plugin_id} 的认证凭证缺失，请重新扫码登录",
+            )
 
         # Fallback to standard connectors
         if source_type == "rss":
@@ -456,6 +517,41 @@ class SourceService:
                 pass
         return completed
 
+    async def refresh_source_auth(
+        self,
+        db: Session,
+        current_user: CurrentUser,
+        source_id: str,
+    ) -> dict:
+        """Refresh auth status for a plugin-based source by validating credentials."""
+        source = self._get_owned_source(db, current_user, source_id)
+        config = json.loads(source.config_json or "{}")
+        auth_data = config.get("auth", {})
+        auth_config = auth_data.get("auth_config", {})
+        plugin_id = auth_config.get("plugin_id")
+        plugin_credentials = auth_config.get("plugin_credentials")
+
+        if not plugin_id or not plugin_credentials:
+            return {"valid": False, "user_info": None, "message": "No plugin credentials found"}
+
+        registry = get_plugin_registry()
+        plugin = registry.get(plugin_id)
+        if not plugin:
+            return {"valid": False, "user_info": None, "message": f"Plugin '{plugin_id}' not found"}
+
+        try:
+            is_valid = await plugin.validate_credentials(plugin_credentials)
+            user_info = None
+            if is_valid:
+                user_info = await plugin.get_user_info(plugin_credentials)
+                source.status = "active"
+            else:
+                source.status = "error"
+            db.commit()
+            return {"valid": is_valid, "user_info": user_info}
+        except Exception as exc:
+            return {"valid": False, "user_info": None, "message": str(exc)}
+
     def _dedupe_key(
         self,
         source_type: str,
@@ -493,7 +589,8 @@ class SourceService:
         plugin_id = auth_config.get("plugin_id")
         plugin_name = None
         plugin_user_info = None
-        
+        plugin_has_credentials = False
+
         if plugin_id:
             registry = get_plugin_registry()
             plugin = registry.get(plugin_id)
@@ -502,6 +599,7 @@ class SourceService:
             plugin_credentials = auth_config.get("plugin_credentials", {})
             if plugin_credentials:
                 plugin_user_info = plugin_credentials.get("user_info")
+                plugin_has_credentials = True
 
         return SourceRead(
             id=source.id,
@@ -524,6 +622,7 @@ class SourceService:
             plugin_id=plugin_id,
             plugin_name=plugin_name,
             plugin_user_info=plugin_user_info,
+            plugin_has_credentials=plugin_has_credentials,
         )
 
     def _to_log_read(self, log: SourceFetchLog) -> SourceFetchLogRead:

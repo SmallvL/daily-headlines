@@ -16,7 +16,10 @@ BILIBILI_API = {
     "qrcode_generate": "https://passport.bilibili.com/x/passport-login/web/qrcode/generate",
     "qrcode_poll": "https://passport.bilibili.com/x/passport-login/web/qrcode/poll",
     "user_info": "https://api.bilibili.com/x/web-interface/nav",
-    "feed_dynamic": "https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space",
+    # "dynamic" = 关注用户的动态（feed/all），需要登录
+    # "space" = 指定 UP 主的动态，需要 host_mid 参数
+    "feed_dynamic": "https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all",
+    "feed_space": "https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space",
     "feed_attention": "https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all",
 }
 
@@ -124,23 +127,42 @@ class BilibiliAuth:
             status_code = data["data"]["code"]
             
             if status_code == 0:
-                # Login successful
+                # Login successful — B站 returns cookies via the sync URL query string
+                login_data = data["data"]
                 cookies = dict(response.cookies)
-                # Extract SESSDATA and other important cookies
+                redirect_url = login_data.get("url", "")
+                if redirect_url:
+                    # Parse cookies from the redirect URL query string
+                    parsed = urllib.parse.urlparse(redirect_url)
+                    qs = urllib.parse.parse_qs(parsed.query)
+                    for key in ("SESSDATA", "bili_jct", "DedeUserID", "DedeUserID__ckMd5", "sid"):
+                        if key in qs and qs[key]:
+                            cookies[key] = qs[key][0]
+                # Also follow the sync URL to set any remaining cookies
+                if redirect_url and "SESSDATA" in cookies:
+                    try:
+                        sync_resp = await client.get(redirect_url, follow_redirects=False)
+                        for k, v in sync_resp.cookies.items():
+                            if k not in cookies:
+                                cookies[k] = v
+                    except Exception:
+                        pass
+
                 credentials = {
                     "cookies": cookies,
                     "cookie_string": "; ".join(f"{k}={v}" for k, v in cookies.items()),
-                    "uid": str(data["data"].get("uid", "")),
-                    "login_time": time.time()
+                    "uid": cookies.get("DedeUserID") or str(login_data.get("uid", "")),
+                    "login_time": time.time(),
+                    "refresh_token": login_data.get("refresh_token"),
                 }
-                
+
                 # Update session
                 session["status"] = QRCodeStatus.CONFIRMED
                 session["credentials"] = credentials
-                
+
                 # Get user info
                 user_info = await BilibiliAuth.get_user_info(credentials)
-                
+
                 return QRCodeStatus(
                     status=QRCodeStatus.CONFIRMED,
                     credentials=credentials,

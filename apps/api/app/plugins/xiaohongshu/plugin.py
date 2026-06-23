@@ -155,8 +155,10 @@ class XiaohongshuPlugin(SourcePlugin):
         fetch_type = (config or {}).get("fetch_type", "follow")
         
         try:
+            headers = self.get_headers(credentials)
+            headers["Referer"] = "https://www.xiaohongshu.com/"
             async with httpx.AsyncClient(
-                headers=self.get_headers(credentials),
+                headers=headers,
                 cookies=credentials.get("cookies", {}),
                 timeout=30.0
             ) as client:

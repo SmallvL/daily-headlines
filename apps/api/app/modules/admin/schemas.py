@@ -77,7 +77,7 @@ class GroupMemberAdd(BaseModel):
 
 class TemplateCreate(BaseModel):
     name: str = Field(min_length=1, max_length=160)
-    type: str = Field(pattern=r"^(rss|api)$")
+    type: str = Field(pattern=r"^(rss|api|web)$")
     endpoint: str
     config: dict = Field(default_factory=dict)
     description: str | None = None

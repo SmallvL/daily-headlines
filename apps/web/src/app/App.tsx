@@ -7,6 +7,7 @@ import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { getPreference } from "../shared/api/preferences";
+import { getUserProfile } from "../shared/api/users";
 import { AppShell } from "./AppShell";
 import { LoginPage } from "../modules/auth/LoginPage";
 import { DashboardPage } from "../modules/dashboard/DashboardPage";
@@ -49,10 +50,20 @@ export function App() {
     return isDark;
   });
   const [antdLocale, setAntdLocale] = useState(i18n.language === "en-US" ? enUS : zhCN);
+  const [userRoles, setUserRoles] = useState<string[]>([]);
+  const isAdmin = userRoles.includes("admin");
 
   useEffect(() => {
     document.documentElement.lang = i18n.language;
   }, [i18n.language]);
+
+  // Fetch user profile to determine admin status
+  useEffect(() => {
+    if (!session) return;
+    getUserProfile(session)
+      .then((profile) => setUserRoles(profile.roles ?? []))
+      .catch(() => setUserRoles([]));
+  }, [session]);
 
   const themeConfig = useMemo(
     () => ({
@@ -121,8 +132,6 @@ export function App() {
     // Update locale
     setAntdLocale(pref.language === "en-US" ? enUS : zhCN);
   }
-
-  const isAdmin = !!session;
 
   return (
     <QueryClientProvider client={queryClient}>

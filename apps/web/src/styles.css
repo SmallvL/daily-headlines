@@ -39,35 +39,70 @@ html[data-theme="dark"] {
     0 1px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px 0 rgba(0, 0, 0, 0.15);
   --color-card-shadow-hover: 0 6px 16px 0 rgba(0, 0, 0, 0.3),
     0 3px 6px -4px rgba(0, 0, 0, 0.25), 0 9px 28px 8px rgba(0, 0, 0, 0.2);
-  .dashboard-toolbar {
-    background: var(--ant-color-bg-container);
-  }
-  .source-card-editing {
-    border-color: var(--ant-color-primary);
-    box-shadow: 0 0 0 2px var(--ant-color-primary-border);
-  }
-  .feed-header h2 {
-    color: var(--color-text);
-  }
-  .dashboard-card-cover {
-    background: var(--color-bg-subtle);
-  }
-  .cover-badge {
-    background: rgba(0, 0, 0, 0.7);
-  }
-  .cover-source-tag {
-    background: rgba(0, 0, 0, 0.7);
-  }
+}
+
+html[data-theme="dark"] .dashboard-toolbar {
+  background: var(--ant-color-bg-container);
+}
+
+html[data-theme="dark"] .source-card-editing {
+  border-color: var(--ant-color-primary);
+  box-shadow: 0 0 0 2px var(--ant-color-primary-border);
+}
+
+html[data-theme="dark"] .feed-header h2 {
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .dashboard-card-cover {
+  background: var(--color-bg-subtle);
+}
+
+html[data-theme="dark"] .cover-badge {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+html[data-theme="dark"] .cover-source-tag {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+html[data-theme="dark"] {
   --page-bg: none;
-  .ant-layout {
-    background: var(--color-bg) !important;
-  }
-  .ant-layout-content {
-    background: inherit !important;
-  }
-  .ant-card {
-    background: var(--color-card-bg);
-  }
+}
+
+html[data-theme="dark"] .ant-layout {
+  background: var(--color-bg) !important;
+}
+
+html[data-theme="dark"] .ant-layout-content {
+  background: inherit !important;
+}
+
+html[data-theme="dark"] .ant-card {
+  background: var(--color-card-bg);
+}
+
+html[data-theme="dark"] .source-type-card {
+  background: var(--color-card-bg);
+}
+
+html[data-theme="dark"] .source-type-card.active {
+  background: rgba(22, 119, 255, 0.15);
+}
+
+html[data-theme="dark"] .source-collapsible-section,
+html[data-theme="dark"] .schedule-simple-card,
+html[data-theme="dark"] .source-form-card {
+  background: var(--color-card-bg);
+  border-color: var(--color-border-subtle);
+}
+
+html[data-theme="dark"] .source-collapsible-header:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .schedule-simple-card.active {
+  background: rgba(22, 119, 255, 0.15);
 }
 
 body {
@@ -415,11 +450,13 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 16px;
 }
 
 .source-form-card {
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--color-card-shadow);
 }
 
 .source-form .ant-form-item {
@@ -428,6 +465,262 @@ body {
 
 .source-form .ant-segmented {
   border-radius: var(--radius-sm);
+}
+
+/* ── Source Wizard ── */
+.source-type-wizard {
+  margin-bottom: 8px;
+}
+
+.source-type-card {
+  text-align: center;
+  padding: 24px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-card-bg);
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.source-type-card:hover:not(.disabled) {
+  border-color: var(--ant-color-primary-border);
+  box-shadow: var(--color-card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.source-type-card.active {
+  border-color: var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
+}
+
+.source-type-card.active .source-type-icon {
+  color: var(--ant-color-primary);
+}
+
+.source-type-card.logged-in {
+  border-color: var(--ant-color-success);
+  background: var(--ant-color-success-bg);
+}
+.source-type-card.logged-in:hover {
+  border-color: var(--ant-color-success);
+  box-shadow: 0 0 0 2px var(--ant-color-success-border);
+}
+.source-type-icon.logged-in {
+  position: relative;
+  color: var(--ant-color-success);
+}
+.source-type-icon .source-type-check {
+  position: absolute;
+  bottom: -6px;
+  right: -8px;
+  font-size: 16px;
+  color: var(--ant-color-success);
+  background: var(--color-bg);
+  border-radius: 50%;
+  padding: 2px;
+}
+
+/* ── 配置区卡片（统一样式）── */
+.source-config-card {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-card-bg);
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.source-config-card:hover {
+  border-color: var(--ant-color-primary-border);
+}
+
+.source-config-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ant-color-text);
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-subtle);
+}
+
+.source-config-card-header > .anticon:first-child {
+  color: var(--ant-color-primary);
+  font-size: 16px;
+}
+
+.source-config-card-header-clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+}
+
+.source-config-card-header-clickable:hover {
+  background: var(--ant-color-primary-bg);
+}
+
+.source-config-card-toggle {
+  margin-left: 8px;
+  color: var(--ant-color-text-tertiary);
+  font-size: 12px;
+}
+
+.source-config-card-body {
+  padding: 18px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.source-config-card-body .ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
+html[data-theme="dark"] .source-config-card {
+  background: var(--color-card-bg);
+  border-color: var(--color-border-subtle);
+}
+
+html[data-theme="dark"] .source-config-card-header {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+html[data-theme="dark"] .source-config-card-header-clickable:hover {
+  background: rgba(22, 119, 255, 0.1);
+}
+
+/* ── 重新设计的定时区 ── */
+.schedule-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.schedule-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  gap: 16px;
+}
+
+.schedule-row-divider {
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: 16px;
+  margin-top: 8px;
+}
+
+.schedule-row-label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: var(--ant-color-text);
+}
+
+.schedule-config-block {
+  padding: 16px;
+  margin-top: 12px;
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-subtle);
+}
+
+html[data-theme="dark"] .schedule-config-block {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ── 暗色侧边栏精修 ── */
+.app-sider-dark .brand {
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+.app-sider-dark .ant-menu-dark {
+  background: transparent !important;
+}
+.app-sider-dark .ant-menu-dark .ant-menu-item {
+  color: rgba(255, 255, 255, 0.65);
+}
+.app-sider-dark .ant-menu-dark .ant-menu-item:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #fff !important;
+}
+.app-sider-dark .ant-menu-dark .ant-menu-item-selected {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.25), rgba(99, 102, 241, 0.08)) !important;
+  color: #fff !important;
+  font-weight: 500;
+}
+.app-sider-dark .ant-menu-dark .ant-menu-item-group-title {
+  color: rgba(255, 255, 255, 0.35) !important;
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 16px 16px 6px;
+}
+.app-sider-dark .brand-text {
+  color: #fff;
+}
+
+/* ── 主题切换按钮 ── */
+.theme-toggle-btn {
+  transition: transform 0.3s ease, background 0.2s ease !important;
+}
+.theme-toggle-btn:hover {
+  transform: rotate(30deg);
+  background: var(--ant-color-bg-text-hover) !important;
+}
+.theme-toggle-btn:active {
+  transform: rotate(180deg);
+}
+
+.source-type-icon {
+  color: var(--ant-color-text-secondary);
+  transition: var(--transition);
+}
+
+.source-wizard-step {
+  animation: fadeIn 0.25s ease-out;
+}
+
+.source-collapsible-section {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-card-bg);
+}
+
+.source-collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.source-collapsible-header:hover {
+  background: var(--color-bg-subtle);
+}
+
+.source-collapsible-body {
+  padding: 0 18px 18px;
+  border-top: 1px solid var(--color-border-subtle);
+  animation: slideDown 0.2s ease-out;
+}
+
+.source-wizard-actions {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Auth Config Section ── */
@@ -674,6 +967,49 @@ body {
   background: var(--ant-color-primary-bg);
 }
 
+/* ── Schedule Simple Cards ── */
+.schedule-simple-panel {
+  padding: 4px;
+}
+
+.schedule-simple-card {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  background: var(--color-bg);
+}
+
+.schedule-simple-card:hover {
+  border-color: var(--ant-color-primary-border);
+  background: var(--ant-color-primary-bg);
+}
+
+.schedule-simple-card.active {
+  border-color: var(--ant-color-primary);
+  background: var(--ant-color-primary-bg);
+  box-shadow: 0 0 0 1px var(--ant-color-primary-border);
+}
+
+.schedule-simple-card-title {
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.schedule-simple-card-desc {
+  font-size: 12px;
+  color: var(--ant-color-text-secondary);
+  margin-top: 2px;
+}
+
+.schedule-simple-card.active .schedule-simple-card-desc {
+  color: var(--ant-color-primary);
+}
+
 /* ── Schedule Summary ── */
 .schedule-summary {
   display: flex;
@@ -887,6 +1223,13 @@ body {
 .dashboard-card:hover {
   box-shadow: var(--color-card-shadow-hover);
   transform: translateY(-2px);
+}
+
+.dashboard-card-skeleton {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--color-card-shadow);
+  background: var(--color-card-bg);
 }
 
 .dashboard-card-cover {

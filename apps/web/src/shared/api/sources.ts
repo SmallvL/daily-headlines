@@ -41,6 +41,7 @@ export type Source = {
   plugin_id?: string | null;
   plugin_name?: string | null;
   plugin_user_info?: Record<string, string> | null;
+  plugin_has_credentials?: boolean;
 };
 
 export type SourcePayload = {
@@ -229,5 +230,70 @@ export function importSourceTemplate(session: AuthSession, template: SourceTempl
     method: "POST",
     token: session.accessToken,
     body: JSON.stringify(template)
+  });
+}
+
+// ── Source Presets ──
+
+export type SourcePreset = {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  type: "rss" | "api" | "web";
+  endpoint: string;
+  config: Record<string, unknown>;
+  auth_type: AuthType;
+  icon: string;
+};
+
+export function listSourcePresets(session: AuthSession): Promise<SourcePreset[]> {
+  return apiRequest<SourcePreset[]>("/api/sources/presets", {
+    token: session.accessToken,
+  });
+}
+
+export function createSourceFromPreset(
+  session: AuthSession,
+  presetId: string,
+  name?: string,
+): Promise<Source> {
+  const qs = name ? `?name=${encodeURIComponent(name)}` : "";
+  return apiRequest<Source>(`/api/sources/presets/${presetId}/create${qs}`, {
+    method: "POST",
+    token: session.accessToken,
+  });
+}
+
+// ── Auto-Detect ──
+
+export type AutoDetectResult = {
+  type: "rss" | "api" | "web";
+  endpoint: string;
+  title: string | null;
+  config: Record<string, unknown>;
+  message: string;
+};
+
+export function autoDetectSource(session: AuthSession, url: string): Promise<AutoDetectResult> {
+  return apiRequest<AutoDetectResult>("/api/sources/auto-detect", {
+    method: "POST",
+    token: session.accessToken,
+    body: JSON.stringify({ url }),
+  });
+}
+
+// ── Auth Refresh ──
+
+export type RefreshAuthResult = {
+  valid: boolean;
+  user_info?: Record<string, string> | null;
+  message?: string;
+};
+
+export function refreshSourceAuth(session: AuthSession, sourceId: string): Promise<RefreshAuthResult> {
+  return apiRequest<RefreshAuthResult>(`/api/sources/${sourceId}/refresh-auth`, {
+    method: "POST",
+    token: session.accessToken,
   });
 }

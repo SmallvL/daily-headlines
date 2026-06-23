@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Button,
+  Card,
   Checkbox,
   Drawer,
   Empty,
@@ -8,8 +9,8 @@ import {
   List,
   Segmented,
   Select,
+  Skeleton,
   Space,
-  Spin,
   Typography,
   message,
   theme,
@@ -37,7 +38,7 @@ import {
   fromApiQuery,
   listSavedSearches,
 } from "../../shared/api/search";
-import { listSources, Source } from "../../shared/api/sources";
+import { listSources } from "../../shared/api/sources";
 
 /* ───────── SVG Icons ───────── */
 
@@ -347,14 +348,59 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
     return `linear-gradient(135deg, hsl(${hue}, 60%, 65%) 0%, hsl(${(hue + 40) % 360}, 50%, 55%) 100%)`;
   };
 
+  /* ───────── Skeletons ───────── */
+  const renderGridSkeletons = () => (
+    <div className="dashboard-feed-grid">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <Card key={i} className="dashboard-card-skeleton" styles={{ body: { padding: 0 } }}>
+          <Skeleton.Image active style={{ width: "100%", height: 160 }} />
+          <div style={{ padding: 12 }}>
+            <Skeleton active title={{ width: "90%" }} paragraph={{ rows: 1, width: "60%" }} />
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+
+  const renderListSkeletons = () => (
+    <div className="dashboard-feed-list">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="dashboard-list-item" style={{ alignItems: "center" }}>
+          <Skeleton.Image active style={{ width: 160, height: 100 }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <Skeleton active title={{ width: "70%" }} paragraph={{ rows: 2, width: ["90%", "50%"] }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderCompactSkeletons = () => (
+    <div className="dashboard-feed-compact">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="dashboard-compact-row">
+          <Skeleton active title={{ width: "60%" }} paragraph={false} />
+        </div>
+      ))}
+    </div>
+  );
+
   /* ───────── Grid Card ───────── */
   const renderGridCard = (item: FeedItem) => {
     const readOpacity = item.is_read ? 0.5 : 1;
+    const handleCardClick = (e: React.MouseEvent) => {
+      // Don't navigate if clicking an action button or interactive element
+      const target = e.target as HTMLElement;
+      if (target.closest("button, a, [data-no-card-click]")) return;
+      handleTitleClick(item);
+      if (item.url) window.open(item.url, "_blank", "noopener,noreferrer");
+    };
     return (
       <div
         key={item.id}
-        className="dashboard-card"
-        style={{ opacity: readOpacity }}
+        className="dashboard-card dashboard-card-clickable"
+        style={{ opacity: readOpacity, cursor: item.url ? "pointer" : "default" }}
+        onClick={handleCardClick}
       >
         {/* Image */}
         <div className="dashboard-card-cover">
@@ -363,6 +409,7 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
               src={proxiedImageUrl(item.image_url) ?? undefined}
               alt=""
               loading="lazy"
+              referrerPolicy="no-referrer"
               style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = "none";
@@ -397,15 +444,10 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
             style={{
               fontSize: 14,
               lineHeight: 1.5,
-              cursor: item.url ? "pointer" : "default",
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
-            }}
-            onClick={() => {
-              handleTitleClick(item);
-              if (item.url) window.open(item.url, "_blank", "noopener,noreferrer");
             }}
           >
             {item.title}
@@ -413,7 +455,11 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
         </div>
 
         {/* Actions */}
-        <div className="dashboard-card-actions" style={{ opacity: item.is_read ? 0.5 : 1 }}>
+        <div
+          className="dashboard-card-actions"
+          style={{ opacity: item.is_read ? 0.5 : 1 }}
+          data-no-card-click
+        >
           {renderActions(item)}
         </div>
       </div>
@@ -423,11 +469,18 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
   /* ───────── List Item ───────── */
   const renderListItem = (item: FeedItem) => {
     const readOpacity = item.is_read ? 0.55 : 1;
+    const handleRowClick = (e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest("button, a, [data-no-card-click]")) return;
+      handleTitleClick(item);
+      if (item.url) window.open(item.url, "_blank", "noopener,noreferrer");
+    };
     return (
       <div
         key={item.id}
-        className="dashboard-list-item"
-        style={{ opacity: readOpacity }}
+        className="dashboard-list-item dashboard-list-item-clickable"
+        style={{ opacity: readOpacity, cursor: item.url ? "pointer" : "default" }}
+        onClick={handleRowClick}
       >
         {/* Thumbnail */}
         <div className="dashboard-list-thumb">
@@ -436,6 +489,7 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
               src={proxiedImageUrl(item.image_url) ?? undefined}
               alt=""
               loading="lazy"
+              referrerPolicy="no-referrer"
               style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = "none";
@@ -477,7 +531,7 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
         </div>
 
         {/* Actions on right */}
-        <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }} data-no-card-click>
           {renderActions(item)}
         </div>
       </div>
@@ -485,11 +539,19 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
   };
 
   /* ───────── Compact Row ───────── */
-  const renderCompactRow = (item: FeedItem) => (
+  const renderCompactRow = (item: FeedItem) => {
+    const handleRowClick = (e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest("button, a, [data-no-card-click]")) return;
+      handleTitleClick(item);
+      if (item.url) window.open(item.url, "_blank", "noopener,noreferrer");
+    };
+    return (
     <div
       key={item.id}
-      className="dashboard-compact-row"
-      style={{ opacity: item.is_read ? 0.55 : 1 }}
+      className="dashboard-compact-row dashboard-compact-row-clickable"
+      style={{ opacity: item.is_read ? 0.55 : 1, cursor: item.url ? "pointer" : "default" }}
+      onClick={handleRowClick}
     >
       {/* Title */}
       <div style={{ flex: 1, minWidth: 0 }}>{renderTitle(item)}</div>
@@ -505,9 +567,10 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
       </span>
 
       {/* Actions */}
-      {renderActions(item)}
+      <div data-no-card-click>{renderActions(item)}</div>
     </div>
-  );
+    );
+  };
 
   /* ───────── Feed container per view mode ───────── */
   const feedData = feedQuery.data;
@@ -635,7 +698,27 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
         ) : null}
 
         {/* Grid view needs special container */}
-        {viewMode === "grid" && !feedQuery.isLoading && items.length > 0 ? (
+        {feedQuery.isLoading ? (
+          viewMode === "grid" ? renderGridSkeletons() : viewMode === "list" ? renderListSkeletons() : renderCompactSkeletons()
+        ) : items.length === 0 ? (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={
+              <Space direction="vertical" size={8} style={{ textAlign: "center" }}>
+                <Typography.Text strong style={{ fontSize: 16 }}>
+                  {t("feed.empty")}
+                </Typography.Text>
+                <Typography.Text type="secondary">
+                  添加 RSS、API 或网页爬虫信息源后，这里会展示聚合内容。
+                </Typography.Text>
+                <Button type="primary" onClick={onCreateSource} style={{ marginTop: 8 }}>
+                  {t("feed.addSource")}
+                </Button>
+              </Space>
+            }
+            className="empty-container"
+          />
+        ) : viewMode === "grid" ? (
           <motion.div
             className="dashboard-feed-grid"
             variants={containerVariants}
@@ -654,7 +737,7 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
               </motion.div>
             ))}
           </motion.div>
-        ) : viewMode === "list" && !feedQuery.isLoading && items.length > 0 ? (
+        ) : viewMode === "list" ? (
           <motion.div className="dashboard-feed-list" initial="hidden" animate="visible">
             {items.map((item, i) => (
               <motion.div key={item.id} variants={cardVariants} custom={i}>
@@ -662,7 +745,7 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
               </motion.div>
             ))}
           </motion.div>
-        ) : viewMode === "compact" && !feedQuery.isLoading && items.length > 0 ? (
+        ) : (
           <motion.div className="dashboard-feed-compact" initial="hidden" animate="visible">
             {items.map((item, i) => (
               <motion.div key={item.id} variants={cardVariants} custom={i}>
@@ -670,13 +753,7 @@ export function DashboardPage({ session, onCreateSource }: DashboardPageProps) {
               </motion.div>
             ))}
           </motion.div>
-        ) : feedQuery.isLoading ? (
-          <div className="loading-container">
-            <Spin size="large" />
-          </div>
-        ) : items.length === 0 ? (
-          <Empty description={t("common.empty")} className="empty-container" />
-        ) : null}
+        )}
       </section>
 
       {/* Filter Drawer */}

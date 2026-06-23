@@ -16,10 +16,7 @@ def _extract_text(node: Any, selector: str, selector_type: str = "css") -> str |
         return None
     try:
         if selector_type == "xpath":
-            # For XPath, we need to use lxml
-            from lxml import html
-            tree = html.fromstring(node.html if hasattr(node, 'html') else str(node))
-            results = tree.xpath(selector)
+            results = node.xpath(selector)
             if results:
                 return results[0].text_content().strip() if hasattr(results[0], 'text_content') else str(results[0]).strip()
         else:
@@ -38,9 +35,7 @@ def _extract_attr(node: Any, selector: str, attr: str, selector_type: str = "css
         return None
     try:
         if selector_type == "xpath":
-            from lxml import html
-            tree = html.fromstring(node.html if hasattr(node, 'html') else str(node))
-            results = tree.xpath(selector)
+            results = node.xpath(selector)
             if results:
                 elem = results[0]
                 if hasattr(elem, 'get'):
@@ -61,9 +56,7 @@ def _extract_image(node: Any, selector: str, selector_type: str = "css") -> str 
         return None
     try:
         if selector_type == "xpath":
-            from lxml import html
-            tree = html.fromstring(node.html if hasattr(node, 'html') else str(node))
-            results = tree.xpath(selector)
+            results = node.xpath(selector)
             if results:
                 elem = results[0]
                 if hasattr(elem, 'get'):
@@ -249,6 +242,7 @@ class WebConnector:
             published_at = _parse_date(date_str)
 
             item = FeedItemCreate(
+                source_id=source_id,
                 external_id=_generate_id(url, title, source_id),
                 title=title,
                 summary=summary,

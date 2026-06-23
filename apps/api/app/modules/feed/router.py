@@ -18,7 +18,7 @@ def list_items(
     current_user: CurrentUserDep,
     db: DbDep,
     q: str | None = Query(default=None, max_length=120),
-    source_type: str | None = Query(default=None, pattern="^(rss|api)$"),
+    source_type: str | None = Query(default=None, pattern="^(rss|api|web)$"),
     source_id: str | None = Query(default=None),
     has_image: bool | None = None,
     saved: bool | None = None,
